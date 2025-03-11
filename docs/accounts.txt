@@ -1,0 +1,24 @@
+prompt login upon website visit.
+
+A USER's password will be encrypted with bcrypt.
+
+The following information is saved to an account and then fetched when displaying /overview/* endpoints.
+
+Data:
+	Year:
+		Month:
+			Events:
+				Datetime of Event (Day of Event, Time of Event), Event label, event description.
+				
+Ex.
+	2025:
+		January:
+			Events:
+				2025-01-13 08:30:00, Class Starts, My CPAN1337 class begins at this time.
+				2025-01-18 12:45:00, Hair Salon, Appointment at Haircuts & Colors at noon.
+		Febuary:
+			...
+		March:
+			...
+	...
+	

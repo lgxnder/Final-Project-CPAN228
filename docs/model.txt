@@ -1,0 +1,9 @@
+class Event:
+	
+	ENUM daysOfWeek = Sunday, Monday, Tuesday, ...
+	Datetime: time, day, month, year.
+
+	string eventLabel
+	string eventDesc
+
+	string eventColor

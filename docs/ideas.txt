@@ -1,0 +1,37 @@
+Access website --> prompt user login
+
+--> log into account with schedule saved. --> redirect to main "schedule" page. overview of current month.
+
+Fetch information about special events for the current month from API (christmas, thanksgiving, easter, etc.)
+
+These days will have a little "sticker" or sticky-note-looking badge on them indicating an event. Maybe they'll have text, too.
+
+
+Schedule Overview:
+		All days in calendar are clickable. OnClick -> redirect to overview for that day.
+		Example: URL changes from 
+				"host.com/sleepplanrepeat/overview/2025/january" to 
+				"host.com/sleepplanrepeat/overview/2025/january/4"
+		
+
+Day Overview:
+		Show times by hour, allow user to input new information with a form.
+		Day info form could look like:
+		
+				UN-CHANGEABLE CURRENT_DATE
+				specify time. (make this look pretty) specify 12 hours, with AM or PM. Range of numbers 1-12.
+				
+				SPECIFY EVENT_LABEL. the label may not have enough space to include the full summary of the event. to solve this, we can specify what will appear on the label for the event, and then have a separate event description.
+				
+				SPECIFY EVENT_DESCRIPTION
+				
+		OnClick to mini pop-up or tool-tip hover that displays the full event description. 
+				
+				
+		
+Endpoints:
+		root: "/sleepplanrepeat/"
+		home: +"/overview/{year}/{month}"
+		day : +"/overview/{year}/{month}/{day}"
+		
+		** Retrieve current year, month, and day to use in URL. Default to current day.

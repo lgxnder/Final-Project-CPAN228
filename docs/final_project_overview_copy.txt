@@ -1,0 +1,42 @@
+Project Name:  SleepPlanRepeat
+
+Team Members: Alexander Stasyna (N01627582), Lakshman Jairam (N01632359), Noah Go (N01621722)
+
+Application Summary: A web-application that will let a user track individual dates, yearly events, and their hourly schedule, all-in-one. There will be different views. A monthly calendar view, with the ability for the user to click into each day of the month to plan and record a more in-depth overview of their day. The application is to be used as a utility tool, with most of the information provided by the user themselves. The user’s information will be saved in an account that links back to a database. The account’s password will be encrypted using bcrypt.
+
+Backend: Use of a date and time API along with the Model-View-Controller design.
+Frontend: We plan to use a mix of ExpressJS and Thymeleaf templating.
+Database: A NoSql database, such as Mongo.
+
+
+We plan to use Git for version control and GitHub as a distributed version control platform to collaborate over.
+Right now, we also plan to use either Vercel or Heroku for a free host for our web application; however, we may seek out other alternatives.
+
+
+Feature List:
+	Alexander
+		Project structure outline.
+		Basic website layout and templating.
+		Add-Event form outline.
+		Writing project updates and overview.
+	Noah
+		Page routing on clicking individual calendar days
+		Define endpoints
+		Implement services and connection to repository
+		Implementation of validation and error-handling. 
+	Laksh
+		Basic Model definition
+		Implementation of outside date, time & events API
+		Implementation of authentication of user accounts and authorization.
+	Linking to data repository and encryption.
+
+Dependencies:
+
+H2
+Devtools
+Starter web
+Lombok
+JPA 
+Spring boot Security
+
+

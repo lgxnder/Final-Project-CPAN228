@@ -1,0 +1,11 @@
+Take a look at the following link:
+
+https://spring.io/blog/2021/12/17/client-side-development-with-spring-boot-applications
+
+
+** Can use basic JavaScript in a <script/> tag or use ExpressJS with Nodejs.
+
+
+Take a look at dependencies on Spring Initializr:
+
+https://start.spring.io/

@@ -1,0 +1,6 @@
+-- Write every comment with first-letter capitalization and punctuation.
+-- Ensure all comments are readable without having to move IDE scrollbar.
+-- Write all comments above described content.
+-- When importing libraries & modules, ensure that there is a
+        two-newline space between where the imports end and
+        the class definition begins.

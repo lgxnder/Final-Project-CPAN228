@@ -6,16 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data                   // Combines @Getter, @Setter, @ToString, and other common utilities.
 @NoArgsConstructor      // Initializes a default constructor.
 @AllArgsConstructor     // Initializes an all-args constructor.
 @Builder                // Modularizes adding fields to existing objects.
 @Entity                 // Indicates class is a JPA entity.
 public class Event {
+    // Initialize primary key.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    // Primary key.
 
     // See about utilizing 1 or 2 libraries in this class alone for timekeeping.
     // https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html
@@ -39,7 +40,7 @@ public class Event {
     // See about implementation after front-end is finished.
     // Ensure Canadian spelling of "colour".
 
-    // Need to implement date and time.
+    // **NEED TO PROPERLY IMPLEMENT DATETIME.
     public Event(String datetime, String label, String description) {
         this.datetime = datetime;
         this.label = label;

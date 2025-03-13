@@ -10,4 +10,6 @@
 	-- delete an Event. USERs should be able to delete their OWN Events.
 	
 
--- follow along with what was implemented in week 8 and onward. UserService and MyUserDetailsService when needed. User passwords must be encoded using bcrypt.
+-- Implement UserService and MyUserDetailsService when needed.
+    -- follow along with what was implemented in week 8 and onward.
+    -- User passwords must be encoded using bcrypt.

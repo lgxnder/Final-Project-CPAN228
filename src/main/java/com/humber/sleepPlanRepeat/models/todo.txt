@@ -1,2 +1,1 @@
--- implement "Event" model. See "~/docs/model.txt" for further guidance.
 -- implement "MyUser"-like model. See lecture 8 work on how to implement.

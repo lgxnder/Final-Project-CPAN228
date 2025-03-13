@@ -1,0 +1,2 @@
+-- implement UserRepository class. Should be an interface that extends JpaRepository. Should link to a NoSQL MongoDB.
+-- implement something like an EventRepository class. Should be an interface that extends JpaRepository. Should link to a NoSQL MongoDB.

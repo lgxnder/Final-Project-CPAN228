@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Day View -- Schedule Planner</title>
 </head>
 <body>
-$END$
+  <h1>Events for <span th:text="${selectedDate}"></span></h1>
+  <ul>
+    <li th:each="event : ${events}"
+        th:text="${event.title} + ' (' + ${event.startTime} + ' -- ' + ${event.endTime} + ')'"></li>
+    <li th:if="${#lists.isEmpty(events)}">No events scheduled for this day.</li>
+  </ul>
+  <a th:href="@{/sleepplanrepeat/overview}">Back to Overview</a>
 </body>
 </html>

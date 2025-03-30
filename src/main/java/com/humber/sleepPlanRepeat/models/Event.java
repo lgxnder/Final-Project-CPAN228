@@ -35,4 +35,12 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Event(String title, LocalDateTime startTime, LocalDateTime endTime, String description, User user) {
+        this.title = title;             // Name of event
+        this.startTime = startTime;     // Start time of event
+        this.endTime = endTime;         // End time of event
+        this.description = description; // Description of event
+        this.user = user;
+    }
 }

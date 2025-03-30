@@ -12,9 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor     // Initializes an all-args constructor.
 @Builder                // Modularizes adding fields to existing objects.
 @Entity                 // Indicates class is a JPA entity.
+@Table(name = "events")
 public class Event {
-    // Initialize primary key.
-    @Id
+
+    @Id // Initialize primary key.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 

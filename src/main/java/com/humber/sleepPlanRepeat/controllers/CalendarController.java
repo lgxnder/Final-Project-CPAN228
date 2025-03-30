@@ -45,14 +45,19 @@ public class CalendarController {
         // Parse date from query param.
         // ex. "2025-03-30"
         LocalDate selectedDate = LocalDate.parse(dateStr);
-
         LocalDateTime dayStart = selectedDate.atStartOfDay();
         LocalDateTime dayEnd = selectedDate.atTime(23, 59, 59);
 
-        // Fetch global events for day.
-        List<Event> globalEvents = eventRepository.findByUserIsNull()
-                // Based on result from repo method -- findByUserIsNull,
-                // perform the following methods:
+        List<Event> globalEvents = eventRepository.findGlobalEventsByDateRange(dayStart, dayEnd);
+
+        /*
+        // Fetch user events for day.
+        List<Event> userEvents = List.of();
+        if (auth != null && auth.isAuthenticated()) {
+            String username = auth.getName();
+            // make userrepository.
+            User user = userRepo.find by username(username)
+            userEvents = eventRepository.findByUserId(user.getId())
 
                 .stream()
                 // Convert list of Event objects into Stream.
@@ -67,11 +72,17 @@ public class CalendarController {
 
                 .collect(Collectors.toList());
                 // Finally, "consume" the Stream and turn it into a list.
+         }
+         */
 
         // TODO: fetch user specific events if authenticated
-        // right now, we are using global events:
+        // List<Event> allEvents = new ArrayList<>();
+        // allEvents.addAll(globalEvents);
+        // allEvents.addAll(userEvents);
+
         model.addAttribute("selectedDate", selectedDate);
         model.addAttribute("events", globalEvents);
+        // replace globalEvents with allEvents here once userEvents is implemented.
 
         return "day";
     }

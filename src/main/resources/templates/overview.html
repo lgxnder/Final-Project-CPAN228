@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sleepPlanRepeat</title>
+</head>
+<body>
+    <h1>Current month: <span th:text="${currentMonth}"></span></h1>
+    <ul>
+        <li th:each="event : ${globalEvents}" th:text="${event.title} + ' on ' + ${event.startTime}"></li>
+    </ul>
+</body>
+</html>

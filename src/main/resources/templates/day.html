@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Day View -- Schedule Planner</title>
+  <meta charset="UTF-8">
+  <title>Day View -- Schedule Planner</title>
 </head>
 <body>
   <h1>Events for <span th:text="${selectedDate}"></span></h1>
+  <div th:if="${error}" th:text="${error}" class="error"></div>
   <ul>
     <li th:each="event : ${events}"
         th:text="${event.title} + ' (' + ${event.startTime} + ' -- ' + ${event.endTime} + ')'"></li>

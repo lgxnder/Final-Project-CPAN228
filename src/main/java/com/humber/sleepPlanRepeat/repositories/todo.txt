@@ -1,3 +1,0 @@
--- Implement UserRepository class.
-    -- Should be an interface that extends JpaRepository.
-    -- Should link to a NoSQL MongoDB.

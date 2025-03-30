@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 
 @Data                   // Combines @Getter, @Setter, @ToString, and other common utilities.
@@ -17,34 +18,21 @@ public class Event {
 
     @Id // Initialize primary key.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    // See about utilizing 1 or 2 libraries in this class alone for timekeeping.
-    // https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html
-    // https://www.w3schools.com/java/java_date.asp
-    private String datetime;
-    // Date & time information.
-    // See about implementation
-    // -- consider other "datetime" formats such as,
-    // yyyy-mm-dd-24hh-mm-ss,
-    // yyyy-mm-dd-12hh-am/pm-mm-ss,
-    // dd-mm-yyyy-12hh-am/pm-mm-ss, or
-    // dd-mm-yyyy-12hh-am/pm-mm.
+    @Column(nullable = false)
+    private String title;
 
-    private String label;
+    @Column(nullable = false)
+    private LocalDateTime startTime;
+
+    @Column
+    private LocalDateTime endTime;
+
+    @Column
     private String description;
-    // A purely visual description for Event set by a USER.
-    // To be displayed on front-end in schedule-view.
 
-    // Could possibly add:
-    //      private String colour;
-    // See about implementation after front-end is finished.
-    // Ensure Canadian spelling of "colour".
-
-    // **NEED TO PROPERLY IMPLEMENT DATETIME.
-    public Event(String datetime, String label, String description) {
-        this.datetime = datetime;
-        this.label = label;
-        this.description = description;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

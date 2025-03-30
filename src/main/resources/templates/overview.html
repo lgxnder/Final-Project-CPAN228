@@ -3,62 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overview Page</title>
+    <title>sleepPlanRepeat</title>
 </head>
 <body>
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Overview Page</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Services</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contact</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<!-- Main Content Section -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <h1>Welcome to the Overview Page</h1>
-            <p class="lead">This is a basic layout that can be expanded as needed. Add sections, content, and more components here as your page evolves.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h2>Section 1</h2>
-            <p>This is a placeholder for section 1. You can add whatever content you like here.</p>
-        </div>
-        <div class="col-md-6">
-            <h2>Section 2</h2>
-            <p>This is a placeholder for section 2. You can add whatever content you like here.</p>
-        </div>
-    </div>
-</div>
-
-<!-- Footer -->
-<footer class="bg-light py-4 mt-5">
-    <div class="container text-center">
-        <p>&copy; 2025 Your Company Name. All rights reserved.</p>
-    </div>
-</footer>
-
+    <h1>Current month: <span th:text="${currentMonth}"></span></h1>
+    <ul>
+        <li th:each="event : ${globalEvents}" th:text="${event.title} + ' on ' + ${event.startTime}"></li>
+    </ul>
 </body>
 </html>

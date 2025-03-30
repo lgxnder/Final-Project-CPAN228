@@ -1,1 +1,0 @@
--- implement "MyUser"-like model. See lecture 8 work on how to implement.

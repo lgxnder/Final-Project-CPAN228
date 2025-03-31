@@ -47,6 +47,7 @@ public class CalendarController {
 
             // Parse date from query param.
             // ex. "2025-03-30"
+            // test using http://localhost:8080/sleepplanrepeat/day?date=2025-12-25
             LocalDate selectedDate = LocalDate.parse(dateStr);
             LocalDateTime dayStart = selectedDate.atStartOfDay();
             LocalDateTime dayEnd = selectedDate.atTime(23, 59, 59);

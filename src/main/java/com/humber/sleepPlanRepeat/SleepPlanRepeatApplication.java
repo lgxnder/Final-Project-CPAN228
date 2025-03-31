@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @SpringBootApplication
 public class SleepPlanRepeatApplication implements CommandLineRunner {
 
-	// Constructor injecton
+	// Constructor injection
 	private final EventService eventService;
 	private final EventRepository eventRepository;
 

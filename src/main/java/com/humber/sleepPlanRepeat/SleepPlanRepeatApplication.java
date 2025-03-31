@@ -27,6 +27,8 @@ public class SleepPlanRepeatApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		// check out library "jollyday" to replace manual insertion
+		// add dependency to pom.xmls
 		eventRepository.save(new Event("Christmas",
 				LocalDateTime.of(2025, 12, 25, 0, 0),
 				LocalDateTime.of(2025, 12, 25, 23, 59),

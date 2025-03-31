@@ -39,5 +39,4 @@ public class SleepPlanRepeatApplication implements CommandLineRunner {
 				"Wear green!",
 				null));
 	}
-
 }

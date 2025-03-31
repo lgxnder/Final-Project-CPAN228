@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @SpringBootApplication
 public class SleepPlanRepeatApplication implements CommandLineRunner {
 
-	// Constructor injecton
+	// Constructor injection
 	private final EventService eventService;
 	private final EventRepository eventRepository;
 
@@ -27,6 +27,8 @@ public class SleepPlanRepeatApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		// check out library "jollyday" to replace manual insertion
+		// add dependency to pom.xmls
 		eventRepository.save(new Event("Christmas",
 				LocalDateTime.of(2025, 12, 25, 0, 0),
 				LocalDateTime.of(2025, 12, 25, 23, 59),
@@ -39,5 +41,4 @@ public class SleepPlanRepeatApplication implements CommandLineRunner {
 				"Wear green!",
 				null));
 	}
-
 }

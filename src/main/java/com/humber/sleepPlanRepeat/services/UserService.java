@@ -3,6 +3,7 @@ import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+//UserService work in progress
 @Service//Used for business logic for the user model
 public class UserService {
 

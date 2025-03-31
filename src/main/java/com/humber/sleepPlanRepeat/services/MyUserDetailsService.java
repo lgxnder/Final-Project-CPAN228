@@ -1,11 +1,10 @@
 package com.humber.sleepPlanRepeat.services;
-
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
+//MyUserDetailsService work in progress
 @Service//Used for business logic for the user model
 public class MyUserDetailsService {
 

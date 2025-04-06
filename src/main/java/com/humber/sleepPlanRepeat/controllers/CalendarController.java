@@ -29,7 +29,7 @@ public class CalendarController {
 
     @GetMapping("/")
     public String redirectToLanding() {
-        return "redirect:/sleeppplanrepeat/landing";
+        return "redirect:/sleepplanrepeat/landing";
     }
 
     @GetMapping("/landing")

@@ -26,7 +26,7 @@ public class EventController {
     private final UserRepository userRepository;
     private final EventService eventService;
 
-    // Constructor injection
+    // Constructor injection.
     public EventController(
             EventRepository eventRepository,
             UserRepository userRepository,
@@ -40,7 +40,7 @@ public class EventController {
     @Value("sleepPlanRepeat")
     private String applicationName;
 
-    // View an event
+    // View a specific event.
     @GetMapping("/view/{id}")
     public String viewEvent(@PathVariable Long id, Model model, Authentication authentication) {
         try {
@@ -50,7 +50,7 @@ public class EventController {
                 Event event = eventOpt.get();
                 model.addAttribute("event", event);
 
-                // Check if the current user is the owner of this event
+                // Check if current user "owns" the event.
                 boolean isOwner = false;
                 if (authentication != null && authentication.isAuthenticated() && event.getUser() != null) {
                     String username = authentication.getName();
@@ -62,39 +62,45 @@ public class EventController {
                     }
                 }
 
+                // If user "owns" event, display it.
                 model.addAttribute("isOwner", isOwner);
                 return "event-view";
+
+                // Otherwise, they should not be able to access it.
             } else {
                 model.addAttribute("error", "Event not found");
                 return "redirect:/sleepplanrepeat/calendar";
             }
+            // Any errors result in an error message and then redirect back to calendar.
         } catch (Exception e) {
             model.addAttribute("error", "Error viewing event: " + e.getMessage());
             return "redirect:/sleepplanrepeat/calendar";
         }
     }
 
-    // Display create event form
+    // Create-event form.
     @GetMapping("/create")
     public String createEventForm(
             @RequestParam(required = false) String date,
             Model model,
             Authentication authentication
     ) {
-        // Check if user is authenticated
+
+        // Check if user is authenticated.
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login?message=Please log in to create events";
         }
 
         Event event = new Event();
 
-        // If a date parameter is provided, set it as the event start time
+        // If a date parameter is provided by the user, set it as the event's start time.
         if (date != null && !date.isEmpty()) {
             LocalDateTime startTime = LocalDateTime.parse(date + "T00:00:00");
             event.setStartTime(startTime);
             event.setEndTime(startTime.plusHours(1));
+
+            // Otherwise, default to the current date and time.
         } else {
-            // Default to current date and time
             LocalDateTime now = LocalDateTime.now();
             event.setStartTime(now);
             event.setEndTime(now.plusHours(1));
@@ -106,7 +112,7 @@ public class EventController {
         return "event-form";
     }
 
-    // Process event creation
+    // Process event creation endpoint.
     @PostMapping("/create")
     public String createEvent(
             @ModelAttribute("event") Event event,
@@ -118,7 +124,7 @@ public class EventController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            // Parse date and time strings to LocalDateTime
+            // Parse and format DateTime strings into LocalTime and LocalDate.
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -130,29 +136,31 @@ public class EventController {
             LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
             LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
 
-            // Validate end time is after start time
+            // Validate that the end time occurs after the start time of the event.
             if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
                 redirectAttributes.addFlashAttribute("error", "End time must be after start time");
                 return "redirect:/sleepplanrepeat/events/create";
             }
 
-            // Set the parsed date-times on the event
+            // Update event with parsed and formatted times.
             event.setStartTime(startDateTime);
             event.setEndTime(endDateTime);
 
-            // Set the user if authenticated
+            // Check if the user is authenticated properly.
             if (authentication != null && authentication.isAuthenticated()) {
                 String username = authentication.getName();
                 Optional<User> userOpt = userRepository.findByUsername(username);
 
+                // Check to ensure user is present in the database.
                 if (userOpt.isPresent()) {
                     event.setUser(userOpt.get());
                 }
             }
 
-            // Save the event
+            // Save the event.
             boolean success = eventService.saveEvent(event);
 
+            // Redirect in different ways according to outcome of saving the Event.
             if (success) {
                 redirectAttributes.addFlashAttribute("message", "Event created successfully!");
                 return "redirect:/sleepplanrepeat/calendar";
@@ -166,7 +174,7 @@ public class EventController {
         }
     }
 
-    // Display edit event form
+    // Edit an event form.
     @GetMapping("/edit/{id}")
     public String editEventForm(@PathVariable Long id, Model model, Authentication authentication) {
         Optional<Event> eventOpt = eventRepository.findById(id);
@@ -174,11 +182,12 @@ public class EventController {
         if (eventOpt.isPresent()) {
             Event event = eventOpt.get();
 
-            // Check if user is authorized to edit this event
+            // Check if user is authenticated to edit this specific event.
             if (authentication != null && authentication.isAuthenticated() && event.getUser() != null) {
                 String username = authentication.getName();
                 Optional<User> userOpt = userRepository.findByUsername(username);
 
+                // Check to ensure user is present in the database.
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
 
@@ -191,14 +200,16 @@ public class EventController {
                 }
             }
 
-            // If user is not authorized
+            // If user is not authorized, then return back to calendar view.
             return "redirect:/sleepplanrepeat/calendar?error=You are not authorized to edit this event";
+
         } else {
+            // If event could not be found.
             return "redirect:/sleepplanrepeat/calendar?error=Event not found";
         }
     }
 
-    // Process event update
+    // Process the edit-event submission.
     @PostMapping("/edit/{id}")
     public String updateEvent(
             @PathVariable Long id,
@@ -211,21 +222,24 @@ public class EventController {
             RedirectAttributes redirectAttributes
     ) {
         try {
+            // Validate that the event is present in the database.
             Optional<Event> existingEventOpt = eventRepository.findById(id);
 
             if (existingEventOpt.isPresent()) {
                 Event existingEvent = existingEventOpt.get();
 
-                // Check if user is authorized to edit this event
+                // Check if user is authorized to edit this event.
                 if (authentication != null && authentication.isAuthenticated() && existingEvent.getUser() != null) {
                     String username = authentication.getName();
                     Optional<User> userOpt = userRepository.findByUsername(username);
 
+                    // Validate that the user is present in the database.
                     if (userOpt.isPresent()) {
                         User user = userOpt.get();
 
                         if (user.getId() == existingEvent.getUser().getId()) {
-                            // Parse date and time strings to LocalDateTime
+
+                            // Parse and format DateTime strings into LocalTime and LocalDate.
                             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -237,32 +251,36 @@ public class EventController {
                             LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
                             LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
 
-                            // Validate end time is after start time
+                            // Validate that the end time occurs after the start time of the event.
                             if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
                                 redirectAttributes.addFlashAttribute("error", "End time must be after start time");
                                 return "redirect:/sleepplanrepeat/events/edit/" + id;
                             }
 
-                            // Update date and time
+                            // Update event with parsed and formatted date and time.
                             existingEvent.setStartTime(startDateTime);
                             existingEvent.setEndTime(endDateTime);
 
-                            // Update other fields
+                            // Update event's title and description fields.
                             existingEvent.setTitle(event.getTitle());
                             existingEvent.setDescription(event.getDescription());
 
-                            // Save the updated event
+                            // Save the updated event.
                             eventRepository.save(existingEvent);
 
                             redirectAttributes.addFlashAttribute("message", "Event updated successfully!");
+
+                            // Redirect to the event-view.
                             return "redirect:/sleepplanrepeat/events/view/" + id;
                         }
                     }
                 }
 
-                // If user is not authorized
+                // If user is not authorized, send error message and redirect to calendar.
                 return "redirect:/sleepplanrepeat/calendar?error=You are not authorized to edit this event";
             } else {
+
+                // If event could not be found, direct to calendar as well.
                 return "redirect:/sleepplanrepeat/calendar?error=Event not found";
             }
         } catch (Exception e) {
@@ -271,24 +289,26 @@ public class EventController {
         }
     }
 
-    // Delete an event
+    // Delete an event by id.
     @PostMapping("/delete/{id}")
     public String deleteEvent(@PathVariable Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
         Optional<Event> eventOpt = eventRepository.findById(id);
 
+        // Ensure event is in database.
         if (eventOpt.isPresent()) {
             Event event = eventOpt.get();
 
-            // Check if user is authorized to delete this event
+            // Check if user is authorized to delete this event.
             if (authentication != null && authentication.isAuthenticated() && event.getUser() != null) {
                 String username = authentication.getName();
                 Optional<User> userOpt = userRepository.findByUsername(username);
 
+                // Ensure user is in database.
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
 
                     if (user.getId() == event.getUser().getId()) {
-                        // Delete the event
+                        // Delete the event.
                         eventRepository.delete(event);
 
                         redirectAttributes.addFlashAttribute("message", "Event deleted successfully!");
@@ -297,18 +317,20 @@ public class EventController {
                 }
             }
 
-            // If user is not authorized
+            // If user is not authorized, redirect.
             return "redirect:/sleepplanrepeat/calendar?error=You are not authorized to delete this event";
         } else {
+
+            // If event could not be found, redirect.
             return "redirect:/sleepplanrepeat/calendar?error=Event not found";
         }
     }
 
-    // Create a global event (admin only, could be expanded later)
+    // Create a global event that can be seen by all users in their calendars.
+    // ADMIN-ONLY
     @GetMapping("/create-global")
     public String createGlobalEventForm(Model model, Authentication authentication) {
-        // For now, assume only admins can create global events
-        // In a real app, you'd check for admin role
+        // Method must be authenticated beforehand in order to run.
 
         Event event = new Event();
         LocalDateTime now = LocalDateTime.now();
@@ -321,7 +343,8 @@ public class EventController {
         return "event-form";
     }
 
-    // Process global event creation
+    // ADMIN-ONLY
+    // Process global event creation.
     @PostMapping("/create-global")
     public String createGlobalEvent(
             @ModelAttribute("event") Event event,
@@ -332,7 +355,7 @@ public class EventController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            // Parse date and time strings to LocalDateTime
+            // Parse and format DateTime strings into LocalTime and LocalDate.
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -344,20 +367,20 @@ public class EventController {
             LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
             LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
 
-            // Validate end time is after start time
+            // Validate that the end time occurs after the start time of the event.
             if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
                 redirectAttributes.addFlashAttribute("error", "End time must be after start time");
                 return "redirect:/sleepplanrepeat/events/create-global";
             }
 
-            // Set the parsed date-times on the event
+            // Update event with parsed and formatted dates and times.
             event.setStartTime(startDateTime);
             event.setEndTime(endDateTime);
 
-            // Global events have no user
+            // Ensure that no users are associated with this event as it is global.
             event.setUser(null);
 
-            // Save the event
+            // Save the event.
             boolean success = eventService.saveEvent(event);
 
             if (success) {

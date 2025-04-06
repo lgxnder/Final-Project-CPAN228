@@ -11,17 +11,13 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.Year;
 
-import java.time.LocalDateTime;
-
 @SpringBootApplication
 public class SleepPlanRepeatApplication implements CommandLineRunner {
 
 	// Constructor injection
-	private final EventService eventService;
 	private final EventRepository eventRepository;
 
-	public SleepPlanRepeatApplication(EventService eventService, EventRepository eventRepository) {
-		this.eventService = eventService;
+	public SleepPlanRepeatApplication(EventRepository eventRepository) {
 		this.eventRepository = eventRepository;
 	}
 

@@ -15,6 +15,7 @@ public class CalendarService {
 
     // Initialize a CalendarDay along with events for a given date.
     public CalendarDay createCalendarDay(LocalDate date, List<Event> allEvents, boolean isCurrentMonth, boolean isToday) {
+
         // Filter events for given date.
         List<Event> dayEvents = allEvents.stream()
                 .filter(event -> {
@@ -23,6 +24,7 @@ public class CalendarService {
                 })
                 .collect(Collectors.toList());
 
+        // Build new object based on filtered data.
         return CalendarDay.builder()
                 .date(date)
                 .isCurrentMonth(isCurrentMonth)

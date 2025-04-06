@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.ArrayList;
 
-
-//MyUserDetailsService work in progress
-@Service//Used for business logic for the user model
+@Service
+// User model business logic.
 public class MyUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -37,13 +36,7 @@ public class MyUserDetailsService implements UserDetailsService {
                     new ArrayList<>()
             );
 
-            // ALTERNATIVELY, we could add a role, USER?
-            // return org.springframework.security.core.userdetails.User
-            //     .withUsername(user.getUsername())
-            //     .password(user.getPassword())
-            //     .roles("USER")
-            //     .build();
-
+            // User could not be found in database.
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }

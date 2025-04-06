@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-@Service    // Designate class as a service.
+@Service
 public class EventService {
 
     private final EventRepository eventRepository;

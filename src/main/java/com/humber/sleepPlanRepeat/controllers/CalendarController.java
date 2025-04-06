@@ -153,7 +153,6 @@ public class CalendarController {
     @GetMapping("/day")
     public String getDayView(@RequestParam("date") String dateStr, Model model, Authentication authentication) {
         try {
-
             // Parse date from query param.
             // ex. "2025-03-30"
             // test using http://localhost:8080/sleepplanrepeat/day?date=2025-12-25
@@ -202,11 +201,20 @@ public class CalendarController {
             model.addAttribute("selectedDate", selectedDate);
             model.addAttribute("events", allEvents);
 
+            return "day";
+
         } catch (DateTimeParseException e) {
             model.addAttribute("error", "Invalid date format. Please use YYYY-MM-DD.");
-        }
+            model.addAttribute("selectedDate", LocalDate.now());
+            model.addAttribute("events", new ArrayList<Event>());
+            return "day";
 
-        return "day";
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred: " + e.getMessage());
+            model.addAttribute("selectedDate", LocalDate.now());
+            model.addAttribute("events", new ArrayList<Event>());
+            return "day";
+        }
     }
 
     @GetMapping("/month")

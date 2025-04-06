@@ -43,9 +43,12 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/sleepplanrepeat/landing", "/sleepplanrepeat/", "/login").permitAll()
                         .requestMatchers("/sleepplanrepeat/day").permitAll()
+                        .requestMatchers("/sleepplanrepeat/calendar", "/sleepplanrepeat/calendar/**").permitAll()
+                        .requestMatchers("/sleepplanrepeat/events/view/**").permitAll()
 
-                        // Pages that require user authentication.
-                        .requestMatchers("/sleepplanrepeat/events/create", "/sleepplanrepeat/events/edit/**", "/sleepplanrepeat/events/delete/**").authenticated()
+                        // Pages that require user authentication
+                        .requestMatchers("/sleepplanrepeat/events/create", "/sleepplanrepeat/events/create-global",
+                                "/sleepplanrepeat/events/edit/**", "/sleepplanrepeat/events/delete/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

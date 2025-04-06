@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    List<Event> findByUserId(Long userId);
+    List<Event> findByUserId(Integer userId);
     List<Event> findByUserIsNull();
     // For use in finding events available to all users.
     // Ex. Christmas.

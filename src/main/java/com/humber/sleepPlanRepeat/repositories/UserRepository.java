@@ -4,10 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
-//Referring this interface as the repository
+
 @Repository
-//JPARepository is used as an interface for entities to used CRUD
-public interface UserRepository extends JpaRepository<User, Long> {
-    //find the user by the username
+// JPARepository is used as an interface for entities to use CRUD operations.
+public interface UserRepository extends JpaRepository<User, Integer> {
+
+    // Find a user by their username.
     public Optional<User> findByUsername(String username);
 }

@@ -133,4 +133,64 @@ public class CalendarController {
 
         return "day";
     }
+
+    @GetMapping("/month")
+    public String getMonthView(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            Model model,
+            Authentication authentication) {
+
+        // Default to current month and year if not specified.
+        YearMonth yearMonth;
+        if (year != null && month != null) {
+            yearMonth = YearMonth.of(year, month);
+        } else {
+            yearMonth = YearMonth.now();
+        }
+
+        LocalDateTime monthStart = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime monthEnd = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        // Get global events for this month.
+        List<Event> monthEvents = eventRepository.findGlobalEventsByDateRange(monthStart, monthEnd);
+
+        // Fetch user events for month if authenticated.
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            Optional<User> userOpt = userRepository.findByUsername(username);
+
+            // User is found in database.
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+
+                // Get all events for this user and filter by date range.
+                List<Event> userMonthEvents = eventRepository.findByUserId((long) user.getId())
+                        .stream()
+                        // Convert list of Event objects into Stream.
+                        // Like a list, but is open for the client to
+                        // act upon whilst more data is still flowing in.
+                        // https://docs.spring.io/spring-data/jpa/reference/repositories/query-methods-details.html
+                        // Check out Stream, Streamable, .stream()
+
+                        .filter(
+                                event ->
+                                        !event.getStartTime().isBefore(monthStart) &&
+                                        !event.getStartTime().isAfter(monthEnd))
+                        // Filter elements (like .filter() in React) to ensure
+                        // that days saved start and end properly.
+
+                        .collect(Collectors.toList());
+                        // Finally, "consume" the Stream and turn it into a list.
+
+                // Add all found user month events to the current list of events.
+                monthEvents.addAll(userMonthEvents);
+            }
+        }
+
+        model.addAttribute("currentYearMonth", yearMonth);
+        model.addAttribute("events", monthEvents);
+
+        return "month";
+    }
 }

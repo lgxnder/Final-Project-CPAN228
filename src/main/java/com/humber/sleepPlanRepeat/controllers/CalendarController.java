@@ -1,9 +1,11 @@
 package com.humber.sleepPlanRepeat.controllers;
 
+import com.humber.sleepPlanRepeat.models.CalendarDay;
 import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
+import com.humber.sleepPlanRepeat.services.CalendarService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +29,17 @@ public class CalendarController {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final CalendarService calendarService;
 
     // Constructor injection
-    public CalendarController(EventRepository eventRepository, UserRepository userRepository) {
+    public CalendarController(
+            EventRepository eventRepository,
+            UserRepository userRepository,
+            CalendarService calendarService
+    ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.calendarService = calendarService;
     }
 
     @Value("sleepPlanRepeat")
@@ -49,30 +58,81 @@ public class CalendarController {
     @GetMapping("/calendar")
     public String getCalendar(Model model, Authentication authentication) {
         YearMonth currentMonth = YearMonth.now();
-        model.addAttribute("currentMonth", currentMonth);
+
+        String formattedMonth = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
+        model.addAttribute("currentMonth", formattedMonth);
 
         // Fetch global events.
         List<Event> globalEvents = eventRepository.findByUserIsNull();
         model.addAttribute("globalEvents", globalEvents);
 
         // Fetch user-specific events if logged in.
+        List<Event> userEvents = new ArrayList<>();
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName();
             Optional<User> userOpt = userRepository.findByUsername(username);
 
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
-                List<Event> userEvents = eventRepository.findByUserId(user.getId());
+                userEvents = eventRepository.findByUserId(user.getId());
                 model.addAttribute("userEvents", userEvents);
-
-                // Create combined list of events to return.
-                List<Event> allEvents = new ArrayList<>(globalEvents);
-                allEvents.addAll(userEvents);
-                model.addAttribute("allEvents", allEvents);
             }
         }
 
-         return "calendar";
+        // Combine all events to return.
+        List<Event> allEvents = new ArrayList<>(globalEvents);
+        allEvents.addAll(userEvents);
+
+        List<CalendarDay> calendarDays = calendarService.generateCalendarDays(currentMonth, allEvents);
+        model.addAttribute("calendarDays", calendarDays);
+
+        return "calendar";
+    }
+
+    @GetMapping("/calendar/previous")
+    public String getPreviousMonth(@RequestParam(required = false) String month,
+                                   @RequestParam(required = false) String year,
+                                   Model model, Authentication authentication) {
+        YearMonth currentMonth;
+
+        // Parse the month and year if provided
+        if (month != null && year != null) {
+            currentMonth = YearMonth.of(Integer.parseInt(year), Integer.parseInt(month));
+        } else {
+            currentMonth = YearMonth.now();
+        }
+
+        // Get the previous month
+        YearMonth previousMonth = currentMonth.minusMonths(1);
+
+        // Redirect to calendar with the new month
+        return "redirect:/sleepplanrepeat/calendar?month=" + previousMonth.getMonthValue() + "&year=" + previousMonth.getYear();
+    }
+
+    @GetMapping("/calendar/next")
+    public String getNextMonth(@RequestParam(required = false) String month,
+                               @RequestParam(required = false) String year,
+                               Model model, Authentication authentication) {
+        YearMonth currentMonth;
+
+        // Parse the month and year if provided
+        if (month != null && year != null) {
+            currentMonth = YearMonth.of(Integer.parseInt(year), Integer.parseInt(month));
+        } else {
+            currentMonth = YearMonth.now();
+        }
+
+        // Get the next month
+        YearMonth nextMonth = currentMonth.plusMonths(1);
+
+        // Redirect to calendar with the new month
+        return "redirect:/sleepplanrepeat/calendar?month=" + nextMonth.getMonthValue() + "&year=" + nextMonth.getYear();
+    }
+
+    @GetMapping("/calendar/today")
+    public String getCurrentMonth() {
+        YearMonth currentMonth = YearMonth.now();
+        return "redirect:/sleepplanrepeat/calendar?month=" + currentMonth.getMonthValue() + "&year=" + currentMonth.getYear();
     }
 
     @GetMapping("/day")

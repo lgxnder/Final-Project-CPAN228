@@ -3,6 +3,7 @@ package com.humber.sleepPlanRepeat.repositories;
 import com.humber.sleepPlanRepeat.models.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -12,11 +13,47 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
+    // Find events by user ID.
     List<Event> findByUserId(Integer userId);
-    List<Event> findByUserIsNull();
-    // For use in finding events available to all users.
-    // Ex. Christmas.
 
+    // Find global events available to all users.
+    List<Event> findByUserIsNull();
+
+    // Find global events within a date range.
     @Query("SELECT e FROM Event e WHERE e.user IS NULL AND e.startTime BETWEEN :start AND :end")
-    List<Event> findGlobalEventsByDateRange(LocalDateTime start, LocalDateTime end);
+    List<Event> findGlobalEventsByDateRange(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    // Find user events within a date range.
+    @Query("SELECT e FROM Event e WHERE e.user.id = :userId AND e.startTime BETWEEN :start AND :end")
+    List<Event> findByUserIdAndDateRange(
+            @Param("userId") Integer userId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    // Find both global and user events within a date range.
+    @Query("SELECT e FROM Event e WHERE (e.user.id = :userId OR e.user IS NULL) AND e.startTime BETWEEN :start AND :end")
+    List<Event> findAllEventsByUserIdAndDateRange(
+            @Param("userId") Integer userId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    // Find events by month.
+    @Query("SELECT e FROM Event e WHERE YEAR(e.startTime) = :year AND MONTH(e.startTime) = :month")
+    List<Event> findByYearAndMonth(
+            @Param("year") int year,
+            @Param("month") int month
+    );
+
+    // Find user events by month.
+    @Query("SELECT e FROM Event e WHERE e.user.id = :userId AND YEAR(e.startTime) = :year AND MONTH(e.startTime) = :month")
+    List<Event> findByUserIdAndYearAndMonth(
+            @Param("userId") Integer userId,
+            @Param("year") int year,
+            @Param("month") int month
+    );
 }

@@ -199,6 +199,13 @@
             border-color: rgba(255, 255, 255, 0.6);
         }
 
+        .empty-calendar-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
         /* For smaller screens */
         @media (max-width: 768px) {
             .calendar-day {
@@ -253,18 +260,18 @@
         <!-- Calendar Header -->
         <div class="calendar-header">
             <div class="calendar-title">
-                <h4 class="mb-0" th:text="${currentMonth}">April 2025</h4>
+                <h4 class="mb-0" th:text="${currentMonth}">Month Year</h4>
             </div>
             <div class="calendar-navigation">
-                <form method="GET" action="/calendar/previous" style="display: inline;">
+                <form method="GET" action="/sleepplanrepeat/calendar/previous" style="display: inline;">
                     <button type="submit" class="nav-btn">
                         <i class="fas fa-chevron-left"></i>
                     </button>
                 </form>
-                <form method="GET" action="/calendar/today" style="display: inline;">
+                <form method="GET" action="/sleepplanrepeat/calendar/today" style="display: inline;">
                     <button type="submit" class="btn btn-sm btn-light">Today</button>
                 </form>
-                <form method="GET" action="/calendar/next" style="display: inline;">
+                <form method="GET" action="/sleepplanrepeat/calendar/next" style="display: inline;">
                     <button type="submit" class="nav-btn">
                         <i class="fas fa-chevron-right"></i>
                     </button>
@@ -285,151 +292,25 @@
                 <div class="calendar-day-header">Sat</div>
             </div>
 
-            <!-- Calendar Days (This will be populated by Thymeleaf) -->
-            <div class="calendar-grid" th:if="${calendarDays}">
-                <div th:each="day : ${calendarDays}"
-                     th:class="${day.isCurrentMonth ? (day.isToday ? 'calendar-day today' : 'calendar-day') : 'calendar-day other-month'}"
-                     th:onclick="'window.location.href=\'/day/' + ${day.date} + '\''">
-                    <div class="day-number" th:text="${day.dayOfMonth}">1</div>
-                    <!-- Events for this day -->
-                    <div th:each="event : ${day.events}"
-                         th:class="${'event event-' + event.type}"
-                         th:text="${event.title}"
-                         th:onclick="'window.location.href=\'/event/' + ${event.id} + '\''">
-                        Event Title
-                    </div>
+            <!-- Calendar Days -->
+            <div th:each="day : ${calendarDays}"
+                 th:class="${day.isCurrentMonth ? (day.isToday ? 'calendar-day today' : 'calendar-day') : 'calendar-day other-month'}"
+                 th:onclick="@{|window.location.href='/sleepplanrepeat/day?date=${day.date}'|}">
+                <div class="day-number" th:text="${day.date.getDayOfMonth()}">1</div>
+                <!-- Events for this day -->
+                <div th:each="event : ${day.events}"
+                     th:class="${event.user == null ? 'event event-default' : 'event event-success'}"
+                     th:text="${event.title}"
+                     th:onclick="@{|event.stopPropagation(); window.location.href='/sleepplanrepeat/events/view/${event.id}'|}">
+                    Event Title
                 </div>
             </div>
 
-            <!-- Fallback Static Calendar for Development/Preview -->
-            <div class="calendar-grid" th:unless="${calendarDays}">
-                <!-- Week 1 -->
-                <div class="calendar-day other-month">
-                    <div class="day-number">30</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">31</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">1</div>
-                    <div class="event event-default">Morning Run</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">2</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">3</div>
-                    <div class="event event-warning">Dentist 2pm</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">4</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">5</div>
-                    <div class="event event-success">Weekend Hike</div>
-                </div>
-
-                <!-- Week 2 -->
-                <div class="calendar-day today">
-                    <div class="day-number">6</div>
-                    <div class="event event-default">Family Dinner</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">7</div>
-                    <div class="event event-default">Team Meeting</div>
-                    <div class="event event-danger">Deadline</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">8</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">9</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">10</div>
-                    <div class="event event-success">Lunch with Alex</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">11</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">12</div>
-                </div>
-
-                <!-- Week 3 -->
-                <div class="calendar-day">
-                    <div class="day-number">13</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">14</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">15</div>
-                    <div class="event event-warning">Review</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">16</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">17</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">18</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">19</div>
-                    <div class="event event-default">Weekend Trip</div>
-                </div>
-
-                <!-- Week 4 -->
-                <div class="calendar-day">
-                    <div class="day-number">20</div>
-                    <div class="event event-default">Weekend Trip</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">21</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">22</div>
-                    <div class="event event-success">Earth Day</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">23</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">24</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">25</div>
-                    <div class="event event-default">Movie Night</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">26</div>
-                </div>
-
-                <!-- Week 5 -->
-                <div class="calendar-day">
-                    <div class="day-number">27</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">28</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">29</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">30</div>
-                    <div class="event event-warning">Monthly Report</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">1</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">2</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">3</div>
-                </div>
+            <!-- Empty Calendar Message (if no calendarDays available) -->
+            <div th:unless="${calendarDays}" class="empty-calendar-message">
+                <p><i class="fas fa-calendar-alt fa-2x mb-3"></i></p>
+                <p>Calendar data is being loaded...</p>
+                <p>If this message persists, please refresh the page.</p>
             </div>
         </div>
     </div>
@@ -445,49 +326,48 @@
                     th:each="event : ${globalEvents}">
                     <div>
                         <span th:text="${event.title}">Event Title</span>
-                        <small class="text-muted ms-2" th:text="${event.startTime}">Start Time</small>
+                        <small class="text-muted ms-2"
+                               th:text="${#temporals.format(event.startTime, 'MMMM d, yyyy h:mm a')}">
+                            Start Time
+                        </small>
                     </div>
-                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                    <a th:href="@{/sleepplanrepeat/events/view/{id}(id=${event.id})}" class="btn btn-sm btn-outline-primary">View</a>
+                </li>
+            </ul>
+
+            <!-- User events list if available -->
+            <ul class="list-group list-group-flush mt-3" th:if="${not #lists.isEmpty(userEvents)}">
+                <li class="list-group-item list-group-item-success">Your Events</li>
+                <li class="list-group-item d-flex justify-content-between align-items-center"
+                    th:each="event : ${userEvents}">
+                    <div>
+                        <span th:text="${event.title}">Event Title</span>
+                        <small class="text-muted ms-2"
+                               th:text="${#temporals.format(event.startTime, 'MMMM d, yyyy h:mm a')}">
+                            Start Time
+                        </small>
+                    </div>
+                    <div>
+                        <a th:href="@{/sleepplanrepeat/events/view/{id}(id=${event.id})}" class="btn btn-sm btn-outline-success me-1">View</a>
+                        <a th:href="@{/sleepplanrepeat/events/edit/{id}(id=${event.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </div>
                 </li>
             </ul>
 
             <!-- Fallback for empty events list -->
-            <ul class="list-group list-group-flush" th:if="${#lists.isEmpty(globalEvents)}">
-                <li class="list-group-item">
-                    <p class="text-center text-muted mb-0">No upcoming events</p>
-                </li>
-            </ul>
-
-            <!-- Static events for preview -->
-            <ul class="list-group list-group-flush" th:unless="${globalEvents}">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <span>Team Meeting</span>
-                        <small class="text-muted ms-2">April 7, 10:00 AM</small>
-                    </div>
-                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <span>Dentist Appointment</span>
-                        <small class="text-muted ms-2">April 3, 2:00 PM</small>
-                    </div>
-                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <span>Project Deadline</span>
-                        <small class="text-muted ms-2">April 7, 5:00 PM</small>
-                    </div>
-                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
-                </li>
-            </ul>
+            <div th:if="${#lists.isEmpty(globalEvents) and #lists.isEmpty(userEvents)}" class="text-center py-4">
+                <p class="text-muted mb-3"><i class="far fa-calendar fa-3x"></i></p>
+                <p class="text-muted">No upcoming events</p>
+                <a href="/sleepplanrepeat/events/create" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus me-1"></i> Create Event
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Add Event Button -->
-<a href="/event/new" class="add-event-btn">
+<a href="/sleepplanrepeat/events/create" class="add-event-btn">
     <i class="fas fa-plus"></i>
 </a>
 

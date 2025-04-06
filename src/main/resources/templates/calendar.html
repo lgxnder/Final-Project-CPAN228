@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SleepPlanRepeat - Calendar</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #4f46e5;
+            --accent-color: #8b5cf6;
+            --light-color: #f3f4f6;
+            --dark-color: #1f2937;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            min-height: 100vh;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+        }
+
+        .calendar-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-navigation {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .calendar-day-header {
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .calendar-day {
+            min-height: 120px;
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-day:hover {
+            background-color: #f9fafb;
+        }
+
+        .calendar-day.other-month {
+            background-color: #f9fafb;
+            color: #9ca3af;
+        }
+
+        .calendar-day.today {
+            background-color: rgba(108, 99, 255, 0.1);
+            border: 1px solid var(--primary-color);
+        }
+
+        .day-number {
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .today .day-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .event {
+            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .event-default {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .event-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .event-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .event-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .event-details {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: white;
+        }
+
+        .add-event-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-event-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--secondary-color);
+        }
+
+        /* For smaller screens */
+        @media (max-width: 768px) {
+            .calendar-day {
+                min-height: 80px;
+                padding: 4px;
+            }
+
+            .event {
+                font-size: 0.7rem;
+                padding: 1px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">
+            <i class="fas fa-moon me-2"></i>SleepPlanRepeat
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="calendar.html">Calendar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Settings</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container py-4">
+    <!-- Calendar Section -->
+    <div class="calendar-container mb-4">
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+            <div class="calendar-title">
+                <h4 class="mb-0" th:text="${currentMonth}">April 2025</h4>
+            </div>
+            <div class="calendar-navigation">
+                <form method="GET" action="/calendar/previous" style="display: inline;">
+                    <button type="submit" class="nav-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </form>
+                <form method="GET" action="/calendar/today" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-light">Today</button>
+                </form>
+                <form method="GET" action="/calendar/next" style="display: inline;">
+                    <button type="submit" class="nav-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div>
+            <!-- Day Headers -->
+            <div class="calendar-grid">
+                <div class="calendar-day-header">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+            </div>
+
+            <!-- Calendar Days (This will be populated by Thymeleaf) -->
+            <div class="calendar-grid" th:if="${calendarDays}">
+                <div th:each="day : ${calendarDays}"
+                     th:class="${day.isCurrentMonth ? (day.isToday ? 'calendar-day today' : 'calendar-day') : 'calendar-day other-month'}"
+                     th:onclick="'window.location.href=\'/day/' + ${day.date} + '\''">
+                    <div class="day-number" th:text="${day.dayOfMonth}">1</div>
+                    <!-- Events for this day -->
+                    <div th:each="event : ${day.events}"
+                         th:class="${'event event-' + event.type}"
+                         th:text="${event.title}"
+                         th:onclick="'window.location.href=\'/event/' + ${event.id} + '\''">
+                        Event Title
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fallback Static Calendar for Development/Preview -->
+            <div class="calendar-grid" th:unless="${calendarDays}">
+                <!-- Week 1 -->
+                <div class="calendar-day other-month">
+                    <div class="day-number">30</div>
+                </div>
+                <div class="calendar-day other-month">
+                    <div class="day-number">31</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">1</div>
+                    <div class="event event-default">Morning Run</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">2</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">3</div>
+                    <div class="event event-warning">Dentist 2pm</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">4</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">5</div>
+                    <div class="event event-success">Weekend Hike</div>
+                </div>
+
+                <!-- Week 2 -->
+                <div class="calendar-day today">
+                    <div class="day-number">6</div>
+                    <div class="event event-default">Family Dinner</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">7</div>
+                    <div class="event event-default">Team Meeting</div>
+                    <div class="event event-danger">Deadline</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">8</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">9</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">10</div>
+                    <div class="event event-success">Lunch with Alex</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">11</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">12</div>
+                </div>
+
+                <!-- Week 3 -->
+                <div class="calendar-day">
+                    <div class="day-number">13</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">14</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">15</div>
+                    <div class="event event-warning">Review</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">16</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">17</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">18</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">19</div>
+                    <div class="event event-default">Weekend Trip</div>
+                </div>
+
+                <!-- Week 4 -->
+                <div class="calendar-day">
+                    <div class="day-number">20</div>
+                    <div class="event event-default">Weekend Trip</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">21</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">22</div>
+                    <div class="event event-success">Earth Day</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">23</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">24</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">25</div>
+                    <div class="event event-default">Movie Night</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">26</div>
+                </div>
+
+                <!-- Week 5 -->
+                <div class="calendar-day">
+                    <div class="day-number">27</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">28</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">29</div>
+                </div>
+                <div class="calendar-day">
+                    <div class="day-number">30</div>
+                    <div class="event event-warning">Monthly Report</div>
+                </div>
+                <div class="calendar-day other-month">
+                    <div class="day-number">1</div>
+                </div>
+                <div class="calendar-day other-month">
+                    <div class="day-number">2</div>
+                </div>
+                <div class="calendar-day other-month">
+                    <div class="day-number">3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Events List -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Upcoming Events</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush" th:if="${not #lists.isEmpty(globalEvents)}">
+                <li class="list-group-item d-flex justify-content-between align-items-center"
+                    th:each="event : ${globalEvents}">
+                    <div>
+                        <span th:text="${event.title}">Event Title</span>
+                        <small class="text-muted ms-2" th:text="${event.startTime}">Start Time</small>
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                </li>
+            </ul>
+
+            <!-- Fallback for empty events list -->
+            <ul class="list-group list-group-flush" th:if="${#lists.isEmpty(globalEvents)}">
+                <li class="list-group-item">
+                    <p class="text-center text-muted mb-0">No upcoming events</p>
+                </li>
+            </ul>
+
+            <!-- Static events for preview -->
+            <ul class="list-group list-group-flush" th:unless="${globalEvents}">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span>Team Meeting</span>
+                        <small class="text-muted ms-2">April 7, 10:00 AM</small>
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span>Dentist Appointment</span>
+                        <small class="text-muted ms-2">April 3, 2:00 PM</small>
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span>Project Deadline</span>
+                        <small class="text-muted ms-2">April 7, 5:00 PM</small>
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Add Event Button -->
+<a href="/event/new" class="add-event-btn">
+    <i class="fas fa-plus"></i>
+</a>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

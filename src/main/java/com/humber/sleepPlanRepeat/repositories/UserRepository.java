@@ -6,7 +6,7 @@ import java.util.Optional;
 
 
 @Repository
-// JPARepository is used as an interface for entities to use CRUD operations.
+// Extend interface to allow entities to utilize Create, Read, Update, and Delete (CRUD) operations.
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     // Find a user by their username.

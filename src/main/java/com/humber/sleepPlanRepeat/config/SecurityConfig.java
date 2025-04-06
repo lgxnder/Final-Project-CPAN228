@@ -16,20 +16,23 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
+    // Constructor injection.
     public SecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
+    // Password hash encryption using BCrypt.
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Manages encryption of user details.
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder())
+                .passwordEncoder(passwordEncoder()) // Utilize BCrypt here.
                 .and()
                 .build();
     }
@@ -38,7 +41,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Public pages that anyone can access
+
+                        // Public pages that be accessed without having to log-in.
                         .requestMatchers("/", "/login", "/register", "/error").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/sleepplanrepeat/landing", "/sleepplanrepeat/", "/login").permitAll()
@@ -46,17 +50,24 @@ public class SecurityConfig {
                         .requestMatchers("/sleepplanrepeat/calendar", "/sleepplanrepeat/calendar/**").permitAll()
                         .requestMatchers("/sleepplanrepeat/events/view/**").permitAll()
 
-                        // Pages that require user authentication
-                        .requestMatchers("/sleepplanrepeat/events/create", "/sleepplanrepeat/events/create-global",
-                                "/sleepplanrepeat/events/edit/**", "/sleepplanrepeat/events/delete/**").authenticated()
-                        .anyRequest().authenticated()
+                        // Private pages that require user authentication / log-in.
+                        .requestMatchers(
+                                "/sleepplanrepeat/events/create", "/sleepplanrepeat/events/create-global",
+                                "/sleepplanrepeat/events/edit/**", "/sleepplanrepeat/events/delete/**")
+                        .authenticated()
+                        .anyRequest()
+                        .authenticated()
                 )
+
+                // Log-in form success/failure redirection.
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/sleepplanrepeat/calendar")
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
+
+                // Log-out form redirection.
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?message=You have been logged out")

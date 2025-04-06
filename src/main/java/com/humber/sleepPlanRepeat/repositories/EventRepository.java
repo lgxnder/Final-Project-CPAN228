@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Repository
+// Extend interface to allow entities to utilize Create, Read, Update, and Delete (CRUD) operations.
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     // Find events by user ID.

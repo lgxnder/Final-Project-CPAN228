@@ -38,15 +38,20 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/sleepplanrepeat/landing", "/sleepplanrepeat/", "/sleepplanrepeat/calendar").permitAll()
+                        // Public pages that anyone can access
+                        .requestMatchers("/", "/login", "/register", "/error").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/sleepplanrepeat/landing", "/sleepplanrepeat/", "/login").permitAll()
                         .requestMatchers("/sleepplanrepeat/day").permitAll()
-                        .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+
+                        // Pages that require user authentication.
                         .requestMatchers("/sleepplanrepeat/events/create", "/sleepplanrepeat/events/edit/**", "/sleepplanrepeat/events/delete/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/sleepplanrepeat/calendar")
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout

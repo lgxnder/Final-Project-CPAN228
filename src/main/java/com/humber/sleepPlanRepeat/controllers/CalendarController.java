@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //CalendarController work in progress
 @Controller
@@ -37,8 +36,8 @@ public class CalendarController {
         return "landing";
     }
 
-    @GetMapping("/overview")
-    public String getOverview(Model model) {
+    @GetMapping("/calendar")
+    public String getCalendar(Model model) {
         YearMonth currentMonth = YearMonth.now(); // Should be March 2025 as of today.
         model.addAttribute("currentMonth", currentMonth);
 
@@ -47,7 +46,7 @@ public class CalendarController {
         model.addAttribute("globalEvents", globalEvents);
 
         // TODO: Fetch user-specific events if logged in
-        return "overview";
+         return "calendar";
     }
 
     @GetMapping("/day")

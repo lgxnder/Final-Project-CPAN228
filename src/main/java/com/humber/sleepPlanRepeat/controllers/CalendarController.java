@@ -45,23 +45,27 @@ public class CalendarController {
     @Value("sleepPlanRepeat")
     private String applicationName;
 
+    // If just the website hostname is typed, redirect to landing page.
     @GetMapping("/")
     public String redirectToLanding() {
         return "redirect:/sleepplanrepeat/landing";
     }
 
+    // Landing page. Links to user sign-in and registration.
     @GetMapping("/landing")
     public String getLanding() {
         return "landing";
     }
 
+    // Calendar page. Updated with global and user events.
+    // Redirected to after sign-in.
     @GetMapping("/calendar")
     public String getCalendar(
             @RequestParam(required = false) Integer month,
             @RequestParam(required = false) Integer year,
             Model model, Authentication authentication)
     {
-        // Determine month to display.
+        // Display current month in schedule by default.
         YearMonth currentMonth;
         if (month != null && year != null) {
             currentMonth = YearMonth.of(year, month);
@@ -104,52 +108,56 @@ public class CalendarController {
         return "calendar";
     }
 
+    // Calendar navigation. Leads to month before currently selected month.
     @GetMapping("/calendar/previous")
     public String getPreviousMonth(@RequestParam(required = false) Integer month,
                                    @RequestParam(required = false) Integer year,
                                    Model model, Authentication authentication) {
         YearMonth currentMonth;
 
-        // Parse the month and year if provided
+        // Parse the month and year if provided.
         if (month != null && year != null) {
             currentMonth = YearMonth.of(year, month);
         } else {
             currentMonth = YearMonth.now();
         }
 
-        // Get the previous month
+        // Get the previous month.
         YearMonth previousMonth = currentMonth.minusMonths(1);
 
-        // Redirect to calendar with the new month
+        // Redirect to the calendar under the new month.
         return "redirect:/sleepplanrepeat/calendar?month=" + previousMonth.getMonthValue() + "&year=" + previousMonth.getYear();
     }
 
+    // Calendar navigation. Leads to month after currently selected month.
     @GetMapping("/calendar/next")
     public String getNextMonth(@RequestParam(required = false) Integer month,
                                @RequestParam(required = false) Integer year,
                                Model model, Authentication authentication) {
         YearMonth currentMonth;
 
-        // Parse the month and year if provided
+        // Parse the month and year if provided.
         if (month != null && year != null) {
             currentMonth = YearMonth.of(year, month);
         } else {
             currentMonth = YearMonth.now();
         }
 
-        // Get the next month
+        // Get the next month.
         YearMonth nextMonth = currentMonth.plusMonths(1);
 
-        // Redirect to calendar with the new month
+        // Redirect to the calendar under the new month.
         return "redirect:/sleepplanrepeat/calendar?month=" + nextMonth.getMonthValue() + "&year=" + nextMonth.getYear();
     }
 
+    // Calendar navigation. Pressing "Today" should update the calendar with the current month.
     @GetMapping("/calendar/today")
     public String getCurrentMonth() {
         YearMonth currentMonth = YearMonth.now();
         return "redirect:/sleepplanrepeat/calendar?month=" + currentMonth.getMonthValue() + "&year=" + currentMonth.getYear();
     }
 
+    // Returns information about events happening during specific day.
     @GetMapping("/day")
     public String getDayView(@RequestParam("date") String dateStr, Model model, Authentication authentication) {
         try {
@@ -217,6 +225,7 @@ public class CalendarController {
         }
     }
 
+    // Returns information about events happening during specific month.
     @GetMapping("/month")
     public String getMonthView(
             @RequestParam(required = false) Integer year,

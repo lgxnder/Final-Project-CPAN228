@@ -14,16 +14,16 @@ public class  AuthController {
 
     private final UserService userService;
 
-    // Constructor injection
+    // Constructor injection.
     private AuthController(UserService userService) {
         this.userService = userService;
     }
 
-    // Application name injection
+    // Application name injection.
     @Value("sleepPlanRepeat")
     private String applicationName;
 
-    // Registration form
+    // Registration form.
     @GetMapping("/register")
     public String registerForm(Model model, @RequestParam(required = false) String message) {
         model.addAttribute("user", new User());
@@ -33,11 +33,11 @@ public class  AuthController {
         return "register";
     }
 
-    // Process registration information from form
+    // Process registration information from form.
     @PostMapping("/register")
     public String registerSubmit(User user) {
 
-        // Check if username already exists in database
+        // Check if username already exists in database.
         int statusCode = userService.saveUser(user);
         if (statusCode == 0) {
             return "redirect:/register?message=Username already taken!";
@@ -46,7 +46,7 @@ public class  AuthController {
         return "redirect:/login?message=Registration successful! Please login to continue.";
     }
 
-    // Login
+    // Login.
     @GetMapping("/login")
     public String login(
             @RequestParam(required = false) String error,
@@ -62,13 +62,13 @@ public class  AuthController {
         return "login";
     }
 
-    // Logout
+    // Logout.
     @GetMapping("/logout")
     public String customLogout() {
         return "redirect:/login?message=logged out successful!";
     }
 
-    // Error
+    // Error.
     @GetMapping("/error")
     public String handleError() {
         return "error";

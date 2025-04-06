@@ -167,6 +167,10 @@
 
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
+                <!-- Remove these hidden fields to prevent auto-binding -->
+                <input type="hidden" name="startTime" th:value="${event.startTime}" />
+                <input type="hidden" name="endTime" th:value="${event.endTime}" />
+
                 <!-- Basic Information Section -->
                 <div class="form-section">
                     <h3 class="form-section-title">Basic Information</h3>
@@ -200,7 +204,7 @@
                         <!-- Start Time -->
                         <div class="col-md-6 mb-3">
                             <label for="startTime" class="form-label">Start Time <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control" id="startTime" name="startTime"
+                            <input type="time" class="form-control" id="startTimeInput" name="startTimeInput"
                                    th:value="${#temporals.format(event.startTime, 'HH:mm')}" required>
                         </div>
 
@@ -214,7 +218,7 @@
                         <!-- End Time -->
                         <div class="col-md-6 mb-3">
                             <label for="endTime" class="form-label">End Time <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control" id="endTime" name="endTime"
+                            <input type="time" class="form-control" id="endTimeInput" name="endTimeInput"
                                    th:value="${#temporals.format(event.endTime, 'HH:mm')}" required>
                         </div>
                     </div>
@@ -248,9 +252,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
         const startDateInput = document.getElementById('startDate');
-        const startTimeInput = document.getElementById('startTime');
+        const startTimeInput = document.getElementById('startTimeInput');
         const endDateInput = document.getElementById('endDate');
-        const endTimeInput = document.getElementById('endTime');
+        const endTimeInput = document.getElementById('endTimeInput');
 
         form.addEventListener('submit', function(event) {
             // Create datetime objects for comparison

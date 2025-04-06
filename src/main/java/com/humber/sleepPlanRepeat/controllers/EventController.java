@@ -111,9 +111,9 @@ public class EventController {
     public String createEvent(
             @ModelAttribute("event") Event event,
             @RequestParam("startDate") String startDate,
-            @RequestParam("startTime") String startTime,
+            @RequestParam("startTimeInput") String startTime,
             @RequestParam("endDate") String endDate,
-            @RequestParam("endTime") String endTime,
+            @RequestParam("endTimeInput") String endTime,
             Authentication authentication,
             RedirectAttributes redirectAttributes
     ) {
@@ -129,6 +129,12 @@ public class EventController {
             LocalDate parsedEndDate = LocalDate.parse(endDate, dateFormatter);
             LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
             LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
+
+            // Validate end time is after start time
+            if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
+                redirectAttributes.addFlashAttribute("error", "End time must be after start time");
+                return "redirect:/sleepplanrepeat/events/create";
+            }
 
             // Set the parsed date-times on the event
             event.setStartTime(startDateTime);
@@ -198,9 +204,9 @@ public class EventController {
             @PathVariable Long id,
             @ModelAttribute("event") Event event,
             @RequestParam("startDate") String startDate,
-            @RequestParam("startTime") String startTime,
+            @RequestParam("startTimeInput") String startTime,
             @RequestParam("endDate") String endDate,
-            @RequestParam("endTime") String endTime,
+            @RequestParam("endTimeInput") String endTime,
             Authentication authentication,
             RedirectAttributes redirectAttributes
     ) {
@@ -230,6 +236,12 @@ public class EventController {
                             LocalDate parsedEndDate = LocalDate.parse(endDate, dateFormatter);
                             LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
                             LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
+
+                            // Validate end time is after start time
+                            if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
+                                redirectAttributes.addFlashAttribute("error", "End time must be after start time");
+                                return "redirect:/sleepplanrepeat/events/edit/" + id;
+                            }
 
                             // Update date and time
                             existingEvent.setStartTime(startDateTime);
@@ -314,9 +326,9 @@ public class EventController {
     public String createGlobalEvent(
             @ModelAttribute("event") Event event,
             @RequestParam("startDate") String startDate,
-            @RequestParam("startTime") String startTime,
+            @RequestParam("startTimeInput") String startTime,
             @RequestParam("endDate") String endDate,
-            @RequestParam("endTime") String endTime,
+            @RequestParam("endTimeInput") String endTime,
             RedirectAttributes redirectAttributes
     ) {
         try {
@@ -331,6 +343,12 @@ public class EventController {
             LocalDate parsedEndDate = LocalDate.parse(endDate, dateFormatter);
             LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
             LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
+
+            // Validate end time is after start time
+            if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
+                redirectAttributes.addFlashAttribute("error", "End time must be after start time");
+                return "redirect:/sleepplanrepeat/events/create-global";
+            }
 
             // Set the parsed date-times on the event
             event.setStartTime(startDateTime);

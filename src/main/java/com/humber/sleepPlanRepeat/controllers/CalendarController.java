@@ -62,7 +62,7 @@ public class CalendarController {
 
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
-                List<Event> userEvents = eventRepository.findByUserId((long) user.getId());
+                List<Event> userEvents = eventRepository.findByUserId(user.getId());
                 model.addAttribute("userEvents", userEvents);
 
                 // Create combined list of events to return.
@@ -100,7 +100,7 @@ public class CalendarController {
                     User user = userOpt.get();
 
                     // Get all events for this user and filter by date range.
-                    List<Event> userEvents = eventRepository.findByUserId((long) user.getId())
+                    List<Event> userEvents = eventRepository.findByUserId(user.getId())
                             .stream()
                             // Convert list of Event objects into Stream.
                             // Like a list, but is open for the client to
@@ -165,7 +165,7 @@ public class CalendarController {
                 User user = userOpt.get();
 
                 // Get all events for this user and filter by date range.
-                List<Event> userMonthEvents = eventRepository.findByUserId((long) user.getId())
+                List<Event> userMonthEvents = eventRepository.findByUserId(user.getId())
                         .stream()
                         // Convert list of Event objects into Stream.
                         // Like a list, but is open for the client to

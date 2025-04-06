@@ -263,7 +263,9 @@
                 <h4 class="mb-0" th:text="${currentMonth}">Month Year</h4>
             </div>
             <div class="calendar-navigation">
-                <form method="GET" action="/sleepplanrepeat/calendar/previous" style="display: inline;">
+                <form method="GET" th:action="@{/sleepplanrepeat/calendar/previous}" style="display: inline;">
+                    <input type="hidden" name="month" th:value="${currentMonthValue}" />
+                    <input type="hidden" name="year" th:value="${currentYear}" />
                     <button type="submit" class="nav-btn">
                         <i class="fas fa-chevron-left"></i>
                     </button>
@@ -271,7 +273,9 @@
                 <form method="GET" action="/sleepplanrepeat/calendar/today" style="display: inline;">
                     <button type="submit" class="btn btn-sm btn-light">Today</button>
                 </form>
-                <form method="GET" action="/sleepplanrepeat/calendar/next" style="display: inline;">
+                <form method="GET" th:action="@{/sleepplanrepeat/calendar/next}" style="display: inline;">
+                    <input type="hidden" name="month" th:value="${currentMonthValue}" />
+                    <input type="hidden" name="year" th:value="${currentYear}" />
                     <button type="submit" class="nav-btn">
                         <i class="fas fa-chevron-right"></i>
                     </button>

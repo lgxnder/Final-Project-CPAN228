@@ -73,6 +73,10 @@ public class CalendarController {
         String formattedMonth = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
         model.addAttribute("currentMonth", formattedMonth);
 
+        // Add current month and year for reference in page navigation.
+        model.addAttribute("currentMonthValue", currentMonth.getMonthValue());
+        model.addAttribute("currentYear", currentMonth.getYear());
+
         // Fetch global events.
         List<Event> globalEvents = eventRepository.findByUserIsNull();
         model.addAttribute("globalEvents", globalEvents);
@@ -101,14 +105,14 @@ public class CalendarController {
     }
 
     @GetMapping("/calendar/previous")
-    public String getPreviousMonth(@RequestParam(required = false) String month,
-                                   @RequestParam(required = false) String year,
+    public String getPreviousMonth(@RequestParam(required = false) Integer month,
+                                   @RequestParam(required = false) Integer year,
                                    Model model, Authentication authentication) {
         YearMonth currentMonth;
 
         // Parse the month and year if provided
         if (month != null && year != null) {
-            currentMonth = YearMonth.of(Integer.parseInt(year), Integer.parseInt(month));
+            currentMonth = YearMonth.of(year, month);
         } else {
             currentMonth = YearMonth.now();
         }
@@ -121,14 +125,14 @@ public class CalendarController {
     }
 
     @GetMapping("/calendar/next")
-    public String getNextMonth(@RequestParam(required = false) String month,
-                               @RequestParam(required = false) String year,
+    public String getNextMonth(@RequestParam(required = false) Integer month,
+                               @RequestParam(required = false) Integer year,
                                Model model, Authentication authentication) {
         YearMonth currentMonth;
 
         // Parse the month and year if provided
         if (month != null && year != null) {
-            currentMonth = YearMonth.of(Integer.parseInt(year), Integer.parseInt(month));
+            currentMonth = YearMonth.of(year, month);
         } else {
             currentMonth = YearMonth.now();
         }

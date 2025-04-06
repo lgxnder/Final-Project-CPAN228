@@ -73,7 +73,6 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            border-top: 1px solid #e5e7eb;
         }
 
         .calendar-day-header {
@@ -81,6 +80,11 @@
             text-align: center;
             font-weight: 500;
             border-bottom: 1px solid #e5e7eb;
+        }
+
+        .calendar-days-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
         }
 
         .calendar-day {
@@ -297,16 +301,18 @@
             </div>
 
             <!-- Calendar Days -->
-            <div th:each="day : ${calendarDays}"
-                 th:class="${day.isCurrentMonth ? (day.isToday ? 'calendar-day today' : 'calendar-day') : 'calendar-day other-month'}"
-                 th:onclick="@{|window.location.href='/sleepplanrepeat/day?date=${day.date}'|}">
-                <div class="day-number" th:text="${day.date.getDayOfMonth()}">1</div>
-                <!-- Events for this day -->
-                <div th:each="event : ${day.events}"
-                     th:class="${event.user == null ? 'event event-default' : 'event event-success'}"
-                     th:text="${event.title}"
-                     th:onclick="@{|event.stopPropagation(); window.location.href='/sleepplanrepeat/events/view/${event.id}'|}">
-                    Event Title
+            <div class="calendar-days-container">
+                <div th:each="day : ${calendarDays}"
+                     th:class="${day.isCurrentMonth ? (day.isToday ? 'calendar-day today' : 'calendar-day') : 'calendar-day other-month'}"
+                     th:onclick="@{|window.location.href='/sleepplanrepeat/day?date=${day.date}'|}">
+                    <div class="day-number" th:text="${day.date.getDayOfMonth()}">1</div>
+                    <!-- Events for this day -->
+                    <div th:each="event : ${day.events}"
+                         th:class="${event.user == null ? 'event event-default' : 'event event-success'}"
+                         th:text="${event.title}"
+                         th:onclick="@{|event.stopPropagation(); window.location.href='/sleepplanrepeat/events/view/${event.id}'|}">
+                        Event Title
+                    </div>
                 </div>
             </div>
 

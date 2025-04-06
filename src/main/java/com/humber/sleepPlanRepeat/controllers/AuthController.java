@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 //AuthController work in progress
-public class AuthController {
+public class  AuthController {
 
     private final UserService userService;
 

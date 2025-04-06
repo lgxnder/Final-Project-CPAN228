@@ -20,13 +20,22 @@ import java.util.stream.Collectors;
 public class CalendarController {
 
     private final EventRepository eventRepository;
-
     public CalendarController(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 
     @Value("sleepPlanRepeat")
     private String applicationName;
+
+    @GetMapping("/")
+    public String redirectToLanding() {
+        return "redirect:/sleeppplanrepeat/landing";
+    }
+
+    @GetMapping("/landing")
+    public String getLanding() {
+        return "landing";
+    }
 
     @GetMapping("/overview")
     public String getOverview(Model model) {

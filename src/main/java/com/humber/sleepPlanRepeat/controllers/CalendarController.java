@@ -56,9 +56,20 @@ public class CalendarController {
     }
 
     @GetMapping("/calendar")
-    public String getCalendar(Model model, Authentication authentication) {
-        YearMonth currentMonth = YearMonth.now();
+    public String getCalendar(
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year,
+            Model model, Authentication authentication)
+    {
+        // Determine month to display.
+        YearMonth currentMonth;
+        if (month != null && year != null) {
+            currentMonth = YearMonth.of(year, month);
+        } else {
+            currentMonth = YearMonth.now();
+        }
 
+        // Format month.
         String formattedMonth = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
         model.addAttribute("currentMonth", formattedMonth);
 

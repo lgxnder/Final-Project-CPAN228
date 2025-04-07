@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
 @Data                   // Combines @Getter, @Setter, @ToString, and other common utilities.
 @NoArgsConstructor      // Initializes a default constructor.
 @AllArgsConstructor     // Initializes an all-args constructor.
@@ -26,19 +25,6 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-    // should store hashed passwords
-
-    /*
-    @Column
-    private String firstName;
-    @Column
-    private String lastName;
-
-    @Column
-    private String emailAddress;
-    @Column
-    private String phoneNum;
-    */
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Event> events;

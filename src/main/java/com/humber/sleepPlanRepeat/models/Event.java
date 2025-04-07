@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
-
 @Data                   // Combines @Getter, @Setter, @ToString, and other common utilities.
 @NoArgsConstructor      // Initializes a default constructor.
 @AllArgsConstructor     // Initializes an all-args constructor.

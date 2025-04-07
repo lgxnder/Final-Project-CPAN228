@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SleepPlanRepeat - Event Details</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #4f46e5;
+            --accent-color: #8b5cf6;
+            --light-color: #f3f4f6;
+            --dark-color: #1f2937;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            min-height: 100vh;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+        }
+
+        .event-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .event-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+        }
+
+        .event-global-badge {
+            background-color: var(--success-color);
+            color: white;
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+        }
+
+        .event-body {
+            padding: 30px;
+        }
+
+        .event-info {
+            margin-bottom: 30px;
+        }
+
+        .event-info-item {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .event-info-icon {
+            width: 35px;
+            height: 35px;
+            background-color: rgba(108, 99, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+
+        .event-info-content {
+            flex: 1;
+        }
+
+        .event-info-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+
+        .event-info-value {
+            font-weight: 500;
+        }
+
+        .event-description {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .event-description h4 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-back {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .btn-edit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* For smaller screens */
+        @media (max-width: 768px) {
+            .event-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+    <div class="container">
+        <a class="navbar-brand" href="/sleepplanrepeat/landing">
+            <i class="fas fa-moon me-2"></i>SleepPlanRepeat
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/sleepplanrepeat/calendar">Calendar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Settings</a>
+                </li>
+            </ul>
+            <!-- Sign Out Form -->
+            <form th:action="@{/logout}" method="post" class="d-flex">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="sign-out-btn" style="background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; border-radius: 5px; padding: 5px 15px;">
+                    <i class="fas fa-sign-out-alt me-1"></i> Sign Out
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container py-4">
+    <!-- Alert for messages -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <span th:text="${message}">Success message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Alert for errors -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <span th:text="${error}">Error message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Event Details -->
+    <div class="event-container">
+        <!-- Event Header -->
+        <div class="event-header">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="mb-0" th:text="${event.title}">Event Title</h2>
+                <span th:if="${event != null && event.user == null}" class="event-global-badge">Global Event</span>
+            </div>
+            <p class="mb-0" th:if="${event != null && event.user != null}">
+                <i class="fas fa-user me-2"></i>
+                <span th:text="${event.user.username}">Username</span>
+            </p>
+        </div>
+
+        <!-- Event Body -->
+        <div class="event-body">
+            <!-- Event Information -->
+            <div class="event-info">
+                <!-- Start Time -->
+                <div class="event-info-item">
+                    <div class="event-info-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="event-info-content">
+                        <div class="event-info-label">Start Time</div>
+                        <div class="event-info-value" th:text="${#temporals.format(event.startTime, 'EEEE, MMMM d, yyyy')}">Date</div>
+                        <div class="event-info-value" th:text="${#temporals.format(event.startTime, 'h:mm a')}">Time</div>
+                    </div>
+                </div>
+
+                <!-- End Time -->
+                <div class="event-info-item">
+                    <div class="event-info-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="event-info-content">
+                        <div class="event-info-label">End Time</div>
+                        <div class="event-info-value" th:text="${#temporals.format(event.endTime, 'EEEE, MMMM d, yyyy')}">Date</div>
+                        <div class="event-info-value" th:text="${#temporals.format(event.endTime, 'h:mm a')}">Time</div>
+                    </div>
+                </div>
+
+                <!-- Duration -->
+                <div class="event-info-item">
+                    <div class="event-info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="event-info-content">
+                        <div class="event-info-label">Duration</div>
+                        <div class="event-info-value">
+                            <span th:with="duration = ${event.endTime.toLocalTime().toSecondOfDay() - event.startTime.toLocalTime().toSecondOfDay()},
+                                         hours = ${duration / 3600},
+                                         minutes = ${(duration % 3600) / 60}">
+                                <span th:text="${hours}">2</span> hours
+                                <span th:if="${minutes > 0}">
+                                    <span th:text="${minutes}">30</span> minutes
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Description -->
+            <div class="event-description">
+                <h4>Description</h4>
+                <p th:text="${event.description}" class="mb-0">Event description goes here. This is a detailed explanation of what this event is about.</p>
+            </div>
+
+            <!-- Event Actions -->
+            <div class="event-actions">
+                <a href="/sleepplanrepeat/calendar" class="btn btn-back">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Calendar
+                </a>
+
+                <!-- Edit button (visible only to event owner) -->
+                <a th:if="${isOwner != null && isOwner}" th:href="@{/sleepplanrepeat/events/edit/{id}(id=${event.id})}" class="btn btn-edit">
+                    <i class="fas fa-edit me-1"></i> Edit Event
+                </a>
+
+                <!-- Delete button (visible only to event owner) -->
+                <form th:if="${isOwner != null && isOwner}" th:action="@{/sleepplanrepeat/events/delete/{id}(id=${event.id})}" method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this event?')">
+                        <i class="fas fa-trash-alt me-1"></i> Delete Event
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

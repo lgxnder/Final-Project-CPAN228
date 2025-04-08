@@ -42,7 +42,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public pages that be accessed without having to log-in.
+                        // Public pages that can be accessed without logging in.
                         .requestMatchers("/", "/login", "/register", "/error").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/sleepplanrepeat/landing", "/sleepplanrepeat/", "/login").permitAll()
@@ -50,13 +50,18 @@ public class SecurityConfig {
                         .requestMatchers("/sleepplanrepeat/calendar", "/sleepplanrepeat/calendar/**").permitAll()
                         .requestMatchers("/sleepplanrepeat/events/view/**").permitAll()
 
+                        // Restrict access to the AI functionality to users with the "USER" role or higher.
+                        .requestMatchers("/sleepplanrepeat/create-event-from-ai", "/sleepplanrepeat/suggest-schedule")
+                        .hasRole("USER")
+
                         // Private pages that require user authentication / log-in.
                         .requestMatchers(
                                 "/sleepplanrepeat/events/create", "/sleepplanrepeat/events/create-global",
                                 "/sleepplanrepeat/events/edit/**", "/sleepplanrepeat/events/delete/**")
                         .authenticated()
-                        .anyRequest()
-                        .authenticated()
+
+                        // Catch-all for any other requests.
+                        .anyRequest().authenticated()
                 )
 
                 // Log-in form success/failure redirection.

@@ -395,4 +395,9 @@ public class EventController {
             return "redirect:/sleepplanrepeat/events/create-global";
         }
     }
+
+
+    // Gemini Functionality
+
+
 }

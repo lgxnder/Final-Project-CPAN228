@@ -31,4 +31,12 @@ public class UserService {
         userRepository.save(user);
         return 1;
     }
+
+
+    //For the Gemini Service - adding this so that I will get the entire User object to pass the user ID to the event service, findEventsByUserId
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
 }

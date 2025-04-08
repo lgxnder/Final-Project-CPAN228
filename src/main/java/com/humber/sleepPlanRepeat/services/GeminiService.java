@@ -35,7 +35,6 @@ public class GeminiService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-
         return "";
     }
 }

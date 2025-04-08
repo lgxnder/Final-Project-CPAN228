@@ -1,21 +1,29 @@
 package com.humber.sleepPlanRepeat.controllers;
+
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.services.UserService;
+import com.humber.sleepPlanRepeat.services.GeminiService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
-public class  AuthController {
+public class AuthController {
 
     private final UserService userService;
+    private final GeminiService geminiService;  // Inject GeminiService
 
-    // Constructor injection.
-    private AuthController(UserService userService) {
+    // Constructor injection for UserService and GeminiService.
+    @Autowired
+    public AuthController(UserService userService, GeminiService geminiService) {
         this.userService = userService;
+        this.geminiService = geminiService;  // Assign GeminiService to the field
     }
 
     // Application name injection.
@@ -61,6 +69,23 @@ public class  AuthController {
         return "login";
     }
 
+    // POST Login - this will use the Gemini AI functionality to provide the personalized message for the user (upcoming events etc).
+    @PostMapping("/login")
+    public String loginSubmit(Model model) {
+        // Retrieve the currently authenticated user from SecurityContext
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();  // Get the username from the authentication object
+
+        // Get personalized message from GeminiService
+        String personalizedMessage = geminiService.getPersonalizedMessage(username);
+
+        // Add the personalized message to the model
+        model.addAttribute("personalizedMessage", personalizedMessage);
+
+        // Redirect to the calendar page
+        return "redirect:/sleepplanrepeat/calendar";
+    }
+
     // Logout.
     @GetMapping("/logout")
     public String customLogout() {
@@ -72,6 +97,4 @@ public class  AuthController {
     public String handleError() {
         return "error";
     }
-
 }
-

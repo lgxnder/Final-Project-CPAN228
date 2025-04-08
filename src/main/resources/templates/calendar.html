@@ -257,6 +257,13 @@
     </div>
 </nav>
 
+
+<!--greeting msg for the user, along with their upcoming events-->
+<div th:if="${personalizedMessage}" class="alert alert-info">
+    <p th:text="${personalizedMessage}"></p>
+</div>
+
+
 <!-- Main Content -->
 <div class="container py-4">
     <!-- Calendar Section -->

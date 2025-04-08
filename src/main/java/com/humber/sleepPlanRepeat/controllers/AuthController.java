@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -78,18 +79,22 @@ public class AuthController {
 
     // POST Login - this will use the Gemini AI functionality to provide the personalized message for the user (upcoming events etc).
     @PostMapping("/login")
-    public String loginSubmit(Model model) {
+    public String loginSubmit(RedirectAttributes redirectAttributes) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         User user = userService.getUserByUsername(username);
         List<Event> userEvents = eventService.findEventsByUserId(user.getId());
-
         String personalizedMessage = geminiService.getPersonalizedMessage(username, userEvents);
-        model.addAttribute("personalizedMessage", personalizedMessage);
 
-        return "redirect:/sleepplanrepeat/calendar";
+        // Set the personalized message as a flash attribute.
+        redirectAttributes.addFlashAttribute("personalizedMessage", personalizedMessage);
+
+        // Redirect to the calendar page.
+        return "redirect:/sleepplanrepeat/calendar/";
     }
+
+
 
     // Logout.
     @GetMapping("/logout")

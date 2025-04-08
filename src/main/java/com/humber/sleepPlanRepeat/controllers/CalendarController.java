@@ -303,7 +303,7 @@ public class CalendarController {
 // retrieves the user's username, and fetches their user details and their events, then it creates a personalized msg
 // with Gemini AI based on the user's name and the events that they have coming up, and then returns the calendar view
 // to be rendered.
-    @GetMapping("/calendar")
+    @GetMapping("/calendar/welcome")
     public String showCalendar(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

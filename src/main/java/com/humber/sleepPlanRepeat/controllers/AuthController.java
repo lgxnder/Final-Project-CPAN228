@@ -1,6 +1,8 @@
 package com.humber.sleepPlanRepeat.controllers;
 
+import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.User;
+import com.humber.sleepPlanRepeat.services.EventService;
 import com.humber.sleepPlanRepeat.services.UserService;
 import com.humber.sleepPlanRepeat.services.GeminiService;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,17 +15,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Controller
 public class AuthController {
 
     private final UserService userService;
     private final GeminiService geminiService;  // Inject GeminiService
+    private final EventService eventService;
+
 
     // Constructor injection for UserService and GeminiService.
     @Autowired
-    public AuthController(UserService userService, GeminiService geminiService) {
+    public AuthController(UserService userService, GeminiService geminiService, EventService eventService) {
         this.userService = userService;
-        this.geminiService = geminiService;  // Assign GeminiService to the field
+        this.geminiService = geminiService;
+        this.eventService = eventService;
     }
 
     // Application name injection.
@@ -72,17 +79,15 @@ public class AuthController {
     // POST Login - this will use the Gemini AI functionality to provide the personalized message for the user (upcoming events etc).
     @PostMapping("/login")
     public String loginSubmit(Model model) {
-        // Retrieve the currently authenticated user from SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();  // Get the username from the authentication object
+        String username = authentication.getName();
 
-        // Get personalized message from GeminiService
-        String personalizedMessage = geminiService.getPersonalizedMessage(username);
+        User user = userService.getUserByUsername(username);
+        List<Event> userEvents = eventService.findEventsByUserId(user.getId());
 
-        // Add the personalized message to the model
+        String personalizedMessage = geminiService.getPersonalizedMessage(username, userEvents);
         model.addAttribute("personalizedMessage", personalizedMessage);
 
-        // Redirect to the calendar page
         return "redirect:/sleepplanrepeat/calendar";
     }
 

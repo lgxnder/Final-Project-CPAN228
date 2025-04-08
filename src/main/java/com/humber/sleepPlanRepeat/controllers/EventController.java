@@ -5,7 +5,9 @@ import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import com.humber.sleepPlanRepeat.services.EventService;
+import com.humber.sleepPlanRepeat.services.GeminiService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -25,16 +28,18 @@ public class EventController {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventService eventService;
+    private final GeminiService geminiService;
 
     // Constructor injection.
     public EventController(
             EventRepository eventRepository,
             UserRepository userRepository,
-            EventService eventService
+            EventService eventService, GeminiService geminiService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.eventService = eventService;
+        this.geminiService = geminiService;
     }
 
     @Value("sleepPlanRepeat")
@@ -398,6 +403,11 @@ public class EventController {
 
 
     // Gemini Functionality
-
+    @PostMapping("/question")
+    public ResponseEntity<String> generateResponse(@RequestBody Map<String, String> payload){
+        String userInput = payload.get("question");
+        String generatedAnswer = geminiService.getPrompt(userInput);
+        return ResponseEntity.ok(generatedAnswer);
+    }
 
 }

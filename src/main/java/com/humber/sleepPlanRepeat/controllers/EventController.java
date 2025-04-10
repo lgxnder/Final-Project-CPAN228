@@ -1,5 +1,4 @@
 package com.humber.sleepPlanRepeat.controllers;
-
 import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -400,7 +398,6 @@ public class EventController {
             return "redirect:/sleepplanrepeat/events/create-global";
         }
     }
-
 
     // Gemini Functionality
     @PostMapping("/question")

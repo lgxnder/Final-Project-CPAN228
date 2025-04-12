@@ -399,6 +399,9 @@ public class EventController {
         }
     }
 
+    @GetMapping("/ai-create")
+    // PROCESS AI HERE USING THIS ENDPOINT
+
     // Gemini Functionality
     @PostMapping("/question")
     public ResponseEntity<String> generateResponse(@RequestBody Map<String, String> payload){

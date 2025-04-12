@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Footer</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
 
+<!-- Footer -->
+<footer th:fragment="footer">
+    <div class="container">
+        <div class="text-center py-3 text-muted">
+            <small>&copy; 2025 SleepPlanRepeat. All rights reserved.</small>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</footer>
 </body>
 </html>

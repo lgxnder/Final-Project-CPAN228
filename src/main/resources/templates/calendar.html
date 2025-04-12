@@ -225,34 +225,9 @@
     </style>
 </head>
 <body>
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
-    <div class="container">
-        <a class="navbar-brand" href="/sleepplanrepeat/landing">
-            <i class="fas fa-moon me-2"></i>SleepPlanRepeat
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="/sleepplanrepeat/calendar">Calendar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Settings</a>
-                </li>
-            </ul>
-            <!-- Sign Out Form -->
-            <form th:action="@{/logout}" method="post" class="d-flex">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <button type="submit" class="sign-out-btn">
-                    <i class="fas fa-sign-out-alt me-1"></i> Sign Out
-                </button>
-            </form>
-        </div>
-    </div>
-</nav>
+
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
 
 <!-- Main Content -->
 <div class="container py-4">
@@ -377,6 +352,9 @@
 <a href="/sleepplanrepeat/events/create" class="add-event-btn">
     <i class="fas fa-plus"></i>
 </a>
+
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
 
 <!-- Bootstrap JS Bundle with Popper -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

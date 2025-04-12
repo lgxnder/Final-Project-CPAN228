@@ -50,6 +50,10 @@
     </style>
 </head>
 <body>
+
+<!-- Header -->
+<div th:replace="partials/header :: header"></div>
+
 <div class="error-container">
     <h1>Oops! Something went wrong</h1>
 
@@ -61,5 +65,9 @@
 
     <a th:href="@{/sleepplanrepeat/}" class="btn">Go to Home Page</a>
 </div>
+
+<!-- Footer -->
+<div th:replace="partials/footer :: footer"></div>
+
 </body>
 </html>

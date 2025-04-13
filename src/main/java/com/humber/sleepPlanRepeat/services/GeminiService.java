@@ -28,7 +28,6 @@ public class GeminiService {
                                 Map.of("text", userQuestion)
                         })
                 }
-
         );
         //Sends request to Gemini with post method
         String response = geminiWebClient.post()

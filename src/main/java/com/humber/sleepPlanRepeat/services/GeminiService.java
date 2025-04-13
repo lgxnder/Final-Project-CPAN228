@@ -15,6 +15,9 @@ public class GeminiService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
+    @Value("${gemini.api.url}")
+    private String apiUrl; // Add this property
+
     @Autowired
     private final WebClient geminiWebClient;
 
@@ -29,9 +32,14 @@ public class GeminiService {
                         })
                 }
         );
+
+
         //Sends request to Gemini with post method
         String response = geminiWebClient.post()
-                .uri(apiKey)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v1/models/gemini-1.5-flash:generateContent")
+                        .queryParam("key", apiKey)
+                        .build())
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
@@ -40,6 +48,9 @@ public class GeminiService {
 
         return response;
     }
+
+
+
     public String getPersonalizedMessage(String username, List<Event> events) {
         StringBuilder eventSummary = new StringBuilder();
 

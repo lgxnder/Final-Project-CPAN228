@@ -403,8 +403,6 @@ public class EventController {
         }
     }
 
-    @GetMapping("/ai-create")
-    // PROCESS AI HERE USING THIS ENDPOINT
 
     // Gemini Functionality
     @PostMapping("/question")

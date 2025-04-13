@@ -18,6 +18,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Controller
 @RequestMapping("/sleepplanrepeat/events")
@@ -410,4 +414,129 @@ public class EventController {
         return ResponseEntity.ok(generatedAnswer);
     }
 
+    @GetMapping("/ai-create")
+    public String aiCreateEvent(Model model, Authentication authentication) {
+        // Check if user is authenticated
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login?message=Please log in to create events";
+        }
+
+        model.addAttribute("aiEnabled", true);
+        return "ai-event-form";
+    }
+
+    @PostMapping("/ai-create")
+    public String processAiEvent(
+            @RequestParam("naturalLanguageInput") String input,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login?message=Please log in to create events";
+            }
+
+            String username = authentication.getName();
+            Optional<User> userOpt = userRepository.findByUsername(username);
+
+            if (userOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                return "redirect:/sleepplanrepeat/calendar";
+            }
+
+            User user = userOpt.get();
+
+            // Ask Gemini to parse the natural language input
+            String response = geminiService.parseNaturalLanguageEvent(input);
+
+            try {
+                // Parse the JSON response
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode eventDetails = mapper.readTree(response);
+
+                // Create a new event from the parsed details
+                Event event = new Event();
+                event.setTitle(eventDetails.path("title").asText("Untitled Event"));
+                event.setDescription(eventDetails.path("description").asText(""));
+
+                // Parse dates and times
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+                LocalDate startDate = LocalDate.parse(eventDetails.path("startDate").asText(), dateFormatter);
+                LocalTime startTime = LocalTime.parse(eventDetails.path("startTime").asText(), timeFormatter);
+                LocalDateTime startDateTime = LocalDateTime.of(startDate, startTime);
+
+                LocalDate endDate = LocalDate.parse(eventDetails.path("endDate").asText(), dateFormatter);
+                LocalTime endTime = LocalTime.parse(eventDetails.path("endTime").asText(), timeFormatter);
+                LocalDateTime endDateTime = LocalDateTime.of(endDate, endTime);
+
+                event.setStartTime(startDateTime);
+                event.setEndTime(endDateTime);
+                event.setUser(user);
+
+                // Save the event
+                boolean success = eventService.saveEvent(event);
+
+                if (success) {
+                    redirectAttributes.addFlashAttribute("message", "Event created successfully!");
+                    return "redirect:/sleepplanrepeat/calendar";
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Failed to create event. Please check your inputs.");
+                    return "redirect:/sleepplanrepeat/events/ai-create";
+                }
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("error", "Failed to parse AI response: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("rawResponse", response);
+                return "redirect:/sleepplanrepeat/events/ai-create";
+            }
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error creating event: " + e.getMessage());
+            return "redirect:/sleepplanrepeat/events/ai-create";
+        }
+    }
+
+    @GetMapping("/scheduling-suggestions")
+    public String getSchedulingSuggestionsForm(Model model, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login?message=Please log in to use scheduling suggestions";
+        }
+
+        model.addAttribute("title", "");
+        return "scheduling-form";
+    }
+
+    @PostMapping("/scheduling-suggestions")
+    public String getSchedulingSuggestions(
+            @RequestParam("eventTitle") String eventTitle,
+            Model model,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login?message=Please log in to use scheduling suggestions";
+        }
+
+        try {
+            String username = authentication.getName();
+            Optional<User> userOpt = userRepository.findByUsername(username);
+
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                List<Event> userEvents = eventRepository.findByUserId(user.getId());
+                String suggestions = geminiService.getSchedulingSuggestions(eventTitle, userEvents);
+
+                model.addAttribute("suggestions", suggestions);
+                model.addAttribute("eventTitle", eventTitle);
+                return "scheduling-suggestions";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                return "redirect:/sleepplanrepeat/calendar";
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error getting scheduling suggestions: " + e.getMessage());
+            return "redirect:/sleepplanrepeat/calendar";
+        }
+    }
 }

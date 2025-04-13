@@ -38,7 +38,7 @@ public class GeminiService {
                 .bodyToMono(String.class)
                 .block();
 
-        return "";
+        return response;
     }
     public String getPersonalizedMessage(String username, List<Event> events) {
         StringBuilder eventSummary = new StringBuilder();

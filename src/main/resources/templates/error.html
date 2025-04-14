@@ -15,6 +15,7 @@
             align-items: center;
             height: 100vh;
             text-align: center;
+            flex-direction: column;
         }
         .error-container {
             background-color: white;
@@ -23,6 +24,7 @@
             padding: 30px;
             width: 80%;
             max-width: 500px;
+            margin: auto;
         }
         h1 {
             color: #e53935;
@@ -47,12 +49,13 @@
         .btn:hover {
             background-color: #4060ee;
         }
+        footer{
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<div th:replace="partials/header :: header"></div>
 
 <div class="error-container">
     <h1>Oops! Something went wrong</h1>
@@ -64,10 +67,13 @@
     </div>
 
     <a th:href="@{/sleepplanrepeat/}" class="btn">Go to Home Page</a>
+    <a th:href="@{/sleepplanrepeat/}" th:action="@{/logout}" class="btn">Log Out</a>
 </div>
 
 <!-- Footer -->
+<footer>
 <div th:replace="partials/footer :: footer"></div>
 
+</footer>
 </body>
 </html>

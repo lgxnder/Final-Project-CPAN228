@@ -1,12 +1,10 @@
 package com.humber.sleepPlanRepeat;
-
 import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.services.EventService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.Year;

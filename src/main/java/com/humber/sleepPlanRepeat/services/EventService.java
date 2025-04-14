@@ -4,7 +4,10 @@ import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -55,5 +58,20 @@ public class EventService {
     // Find user-specific events based on ID.
     public List<Event> findEventsByUserId(int userId) {
         return eventRepository.findByUserId(userId);
+    }
+
+
+
+// parsing date and time strings into LocalDateTime objects for gemini event creation
+    public LocalDateTime parseDateTime(String date, String time) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalDate parsedDate = LocalDate.parse(date, dateFormatter);
+        LocalTime parsedTime = LocalTime.parse(time, timeFormatter);
+        return LocalDateTime.of(parsedDate, parsedTime);
+    }
+
+    public boolean isEndTimeValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return endDateTime.isAfter(startDateTime);
     }
 }

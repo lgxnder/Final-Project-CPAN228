@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 // User model used in business logic.
 public class UserService {
 
-
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -32,11 +31,7 @@ public class UserService {
         return 1;
     }
 
-
-    //For the Gemini Service - adding this so that I will get the entire User object to pass the user ID to the event service, findEventsByUserId
-
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
     }
-
 }

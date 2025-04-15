@@ -60,9 +60,30 @@ public class EventService {
         return eventRepository.findByUserId(userId);
     }
 
+    // Validate event dates.
+    private String validateEventDates(String startDate, String startTime, String endDate, String endTime, Event event) {
+        try {
+            // Parse dates
+            LocalDateTime startDateTime = parseDateTime(startDate, startTime);
+            LocalDateTime endDateTime = parseDateTime(endDate, endTime);
 
+            // Validate that the end time occurs after the start time of the event.
+            if (!isEndTimeValid(startDateTime, endDateTime)) {
+                return "End time must be after start time";
+            }
 
-// parsing date and time strings into LocalDateTime objects for gemini event creation
+            // Update event with the parsed dates
+            event.setStartTime(startDateTime);
+            event.setEndTime(endDateTime);
+
+            return null;
+
+        } catch (Exception e) {
+            return "Error parsing dates: " + e.getMessage();
+        }
+    }
+
+    // Parse and format DateTime strings into LocalTime and LocalDate.
     public LocalDateTime parseDateTime(String date, String time) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -71,6 +92,7 @@ public class EventService {
         return LocalDateTime.of(parsedDate, parsedTime);
     }
 
+    // Validate that the end time occurs after the start time of the event.
     public boolean isEndTimeValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return endDateTime.isAfter(startDateTime);
     }

@@ -37,7 +37,8 @@ public class Event {
     @Column
     private String focusTag;
 
-
+    @Column
+    private String color;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

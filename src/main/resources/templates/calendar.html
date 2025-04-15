@@ -340,18 +340,6 @@
 <!-- Main Content -->
 <div class="container py-4">
 
-    <!-- Event Actions Section -->
-    <div class="event-actions my-3">
-        <!-- Create event button -->
-        <a href="/sleepplanrepeat/events/create" class="btn btn-primary me-2">
-            <i class="fas fa-plus"></i> Create Event
-        </a>
-        <!-- AI event generation button -->
-        <a href="#" id="openAiAssistantBtn" class="btn btn-info">
-            <i class="fas fa-magic"></i> Create Event with AI
-        </a>
-    </div>
-
     <!-- Calendar Section -->
     <div class="calendar-container mb-4">
         <!-- Calendar Header -->
@@ -522,6 +510,9 @@
         const aiCreateBtn = document.getElementById('aiCreateBtn');
         const aiPrompt = document.getElementById('aiPrompt');
 
+        const csrfToken = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const csrfHeader = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
         // Open AI menu when the addEvent button is clicked
         addEventBtn.addEventListener('click', function() {
             aiMenu.classList.add('show');
@@ -540,97 +531,57 @@
         aiCloseBtn.addEventListener('click', closeAiMenu);
         aiOverlay.addEventListener('click', closeAiMenu);
 
-        //Validation for the AI prompt
+        // Validation for the AI prompt.
         function isValidPrompt(prompt) {
-            //Check if prompt must be more than 3 characters
+            // Ensure that prompt is more than 3 characters.
             return prompt.length > 3;
         }
 
-        // Handle AI prompt submission
+        // Handle AI prompt submission.
         function handleAiPrompt() {
             const promptText = aiPrompt.value.trim();
-            if (promptText === '') {
+            if (!promptText) {
                 alert('Please enter a prompt before submitting!');
-            } else if (!isValidPrompt(promptText)) {
-                alert('Sorry, the AI could not understand your prompt or your prompt is shorter then 3 characters!');
-            } else {
-                console.log('Processing AI prompt:', promptText);
-                window.location.href = `/sleepplanrepeat/events/ai-create?prompt=${encodeURIComponent(promptText)}`;
+                return;
             }
+
+            if (!isValidPrompt(promptText)) {
+                alert('Sorry, the AI could not understand your prompt or your prompt is shorter than 3 characters!');
+                return;
+            }
+
+            fetch('/sleepplanrepeat/events/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [csrfHeader]: csrfToken
+                },
+                body: 'naturalLanguageInput=' + encodeURIComponent(promptText)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/sleepplanrepeat/calendar'; // Redirect on success
+                    } else {
+                        return response.text().then(errorMessage => {
+                            alert('Failed to create event: ' + errorMessage); // Display error
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending AI prompt:', error);
+                    alert('An error occurred while communicating with the server.');
+                });
         }
 
         aiSendBtn.addEventListener('click', handleAiPrompt);
         aiCreateBtn.addEventListener('click', handleAiPrompt);
 
         // Allow pressing Enter key inside the input to trigger submission
-        aiPrompt.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                handleAiPrompt();
-            }
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        const addEventBtn = document.getElementById('addEventBtn');
-        const aiMenu = document.getElementById('aiMenu');
-        const aiOverlay = document.getElementById('aiOverlay');
-        const aiCloseBtn = document.getElementById('aiCloseBtn');
-        const aiSendBtn = document.getElementById('aiSendBtn');
-        const aiCreateBtn = document.getElementById('aiCreateBtn');
-        const aiPrompt = document.getElementById('aiPrompt');
-
-        // Open AI menu when the addEvent button is clicked
-        addEventBtn.addEventListener('click', function() {
-            aiMenu.classList.add('show');
-            aiOverlay.classList.add('show');
-            setTimeout(() => {
-                aiPrompt.focus();
-            }, 300);
-        });
-
-        // Function to close the AI menu
-        function closeAiMenu() {
-            aiMenu.classList.remove('show');
-            aiOverlay.classList.remove('show');
-        }
-
-        aiCloseBtn.addEventListener('click', closeAiMenu);
-        aiOverlay.addEventListener('click', closeAiMenu);
-
-        // Handle the AI prompt submission
-        function handleAiPrompt() {
-            const promptText = aiPrompt.value.trim();
-            if (promptText) {
-                console.log('Processing AI prompt:', promptText);
-                fetch('/sleepplanrepeat/events/ai-create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        [csrfHeader]: csrfToken, // Add the CSRF header with the token
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'naturalLanguageInput=' + encodeURIComponent(promptText)
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            window.location.href = '/sleepplanrepeat/calendar'; // Redirect on success
-                        } else {
-                            return response.text().then(errorMessage => {
-                                alert('Failed to create event: ' + errorMessage); // Display error
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error sending AI prompt:', error);
-                        alert('An error occurred while communicating with the server.');
-                    });
-            }
-        }
-
         aiSendBtn.addEventListener('click', handleAiPrompt);
         aiCreateBtn.addEventListener('click', handleAiPrompt);
         aiPrompt.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
+                event.preventDefault();
                 handleAiPrompt();
             }
         });

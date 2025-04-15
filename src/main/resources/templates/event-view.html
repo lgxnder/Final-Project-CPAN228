@@ -215,6 +215,33 @@
                 </div>
             </div>
 
+
+            <div th:if="${event.focusTag}" class="event-info-item">
+                <div class="event-info-icon">
+                    <i class="fas fa-tag"></i>
+                </div>
+                <div class="event-info-content">
+                    <div class="event-info-label">Focus Tag</div>
+                    <div class="event-info-value" th:text="${event.focusTag}">#Work</div>
+                </div>
+            </div>
+
+            <div th:if="${event.externalLink}" class="event-info-item">
+                <div class="event-info-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="event-info-content">
+                    <div class="event-info-label">External Link</div>
+                    <div class="event-info-value">
+                        <a th:href="${event.externalLink}" target="_blank" rel="noopener noreferrer"
+                           style="color: var(--primary-color); text-decoration: underline;">
+                            <i class="fas fa-external-link-alt me-1"></i> Open Link
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
             <!-- Event Description -->
             <div class="event-description">
                 <h4>Description</h4>

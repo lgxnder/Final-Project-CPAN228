@@ -31,6 +31,14 @@ public class Event {
     @Column
     private String description;
 
+    @Column
+    private String externalLink; // users can add a link to maybe a online Zoom meeting, etc
+
+    @Column
+    private String focusTag;
+
+
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

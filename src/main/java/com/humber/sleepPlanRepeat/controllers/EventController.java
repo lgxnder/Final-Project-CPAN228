@@ -4,6 +4,7 @@ import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import com.humber.sleepPlanRepeat.services.EventService;
+import com.humber.sleepPlanRepeat.services.FollowUpService;
 import com.humber.sleepPlanRepeat.services.GeminiService;
 import com.humber.sleepPlanRepeat.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,18 +35,21 @@ public class EventController {
     private final EventService eventService;
     private final GeminiService geminiService;
     private final UserService userService;
+    private final FollowUpService followUpService;
 
     // Constructor injection.
     public EventController(
             EventRepository eventRepository,
             UserRepository userRepository,
-            EventService eventService, GeminiService geminiService, UserService userService
+            EventService eventService, GeminiService geminiService, UserService userService,
+            FollowUpService followUpService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.eventService = eventService;
         this.geminiService = geminiService;
         this.userService = userService;
+        this.followUpService = followUpService;
     }
 
     @Value("sleepPlanRepeat")
@@ -567,6 +571,73 @@ public class EventController {
             return "scheduling-suggestions";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error getting scheduling suggestions: " + e.getMessage());
+            return "redirect:/sleepplanrepeat/calendar";
+        }
+    }
+
+    // Generate concise summaries of event details or meeting notes
+    @PostMapping("/event-summary")
+    public String generateEventSummary(
+            @RequestParam("eventSummary") String eventSummary,
+            Authentication auth,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        Optional<User> userOpt = getAuthenticatedUser(auth);
+        if (userOpt.isEmpty()) {
+            return "redirect:/login?message=Please log in to view event summaries";
+        }
+        try {
+            Optional<Event> eventOpt = eventRepository.findById(Long.parseLong(eventSummary));
+            if (eventOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Event not found");
+                return "redirect:/sleepplanrepeat/calendar";
+            }
+            Event event = eventOpt.get();
+            String prompt = "Here is the following event details:\n" +
+                    "Title: " + event.getTitle() + "\n" +
+                    "Description: " + event.getDescription() + "\n" +
+                    "Start Time: " + event.getStartTime() + "\n" +
+                    "End Time: " + event.getEndTime();
+
+            String summary = geminiService.getPrompt(prompt);
+            model.addAttribute("summary", summary);
+            model.addAttribute("event", event);
+            return "event-summary";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error generating event summary: " + e.getMessage());
+            return "redirect:/sleepplanrepeat/calendar";
+        }
+    }
+
+    // Generate contextually appropriate follow-up messages based on event type and outcomes
+    @PostMapping("/automated-followup")
+    public String generateFollowUp(
+            @RequestParam("followUp") String followUp,
+            @RequestParam("outcome") String outcome,
+            Authentication auth,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        Optional<User> userOpt = getAuthenticatedUser(auth);
+        if (userOpt.isEmpty()) {
+            return "redirect:/login?message=Please log in to generate follow-up messages";
+        }
+        try {
+            Optional<Event> eventOpt = eventRepository.findById(Long.parseLong(followUp));
+            if (eventOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Event not found");
+                return "redirect:/sleepplanrepeat/calendar";
+            }
+
+            Event event = eventOpt.get();
+            String followUpMessage = followUpService.generateFollowUpMessage(event, outcome);
+
+            model.addAttribute("followUpMessage", followUpMessage);
+            model.addAttribute("event", event);
+            return "automated-followup";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error generating follow-up message: " + e.getMessage());
             return "redirect:/sleepplanrepeat/calendar";
         }
     }

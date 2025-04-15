@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/sleepplanrepeat/day").permitAll()
                         .requestMatchers("/sleepplanrepeat/calendar", "/sleepplanrepeat/calendar/**").permitAll()
                         .requestMatchers("/sleepplanrepeat/events/view/**").permitAll()
+                        .requestMatchers("/sleepplanrepeat/events/question").permitAll()
 
                         // Restrict access to the AI functionality to users with the "USER" role or higher.
                         .requestMatchers("/sleepplanrepeat/create-event-from-ai", "/sleepplanrepeat/suggest-schedule")

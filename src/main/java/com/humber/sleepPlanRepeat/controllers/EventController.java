@@ -493,6 +493,7 @@ public class EventController {
         try {
             // Use GeminiService to process the natural language input.
             String response = geminiService.getPrompt(input);
+            System.out.println("Raw Gemini Response: " + response); // Keep this for debugging
 
             // Parse the JSON response using Jackson.
             ObjectMapper mapper = new ObjectMapper();
@@ -500,22 +501,27 @@ public class EventController {
 
             // Create a new Event based on the parsed details.
             Event event = new Event();
-            event.setTitle(eventDetails.path("title").asText("Untitled Event"));
+            event.setTitle(eventDetails.path("title").asText("AI Generated Event")); // Default title
             event.setDescription(eventDetails.path("description").asText(""));
 
             // Parse and validate start and end date/time using EventService.
-            LocalDateTime startDateTime = eventService.parseDateTime(
-                    eventDetails.path("startDate").asText(),
-                    eventDetails.path("startTime").asText()
-            );
-            LocalDateTime endDateTime = eventService.parseDateTime(
-                    eventDetails.path("endDate").asText(),
-                    eventDetails.path("endTime").asText()
-            );
+            String startDateStr = eventDetails.path("startDate").asText();
+            String startTimeStr = eventDetails.path("startTime").asText();
+            String endDateStr = eventDetails.path("endDate").asText();
+            String endTimeStr = eventDetails.path("endTime").asText();
+
+            // Check if date and time information was extracted
+            if (startDateStr.isEmpty() || startTimeStr.isEmpty() || endDateStr.isEmpty() || endTimeStr.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Could not fully understand the date and time from your input. Please try again with more specific details.");
+                return "redirect:/sleepplanrepeat/calendar"; // Redirect with an error
+            }
+
+            LocalDateTime startDateTime = eventService.parseDateTime(startDateStr, startTimeStr);
+            LocalDateTime endDateTime = eventService.parseDateTime(endDateStr, endTimeStr);
 
             if (!eventService.isEndTimeValid(startDateTime, endDateTime)) {
-                redirectAttributes.addFlashAttribute("error", "End time must be after start time");
-                return "redirect:/sleepplanrepeat/events/ai-create";
+                redirectAttributes.addFlashAttribute("error", "The end time suggested by AI must be after the start time.");
+                return "redirect:/sleepplanrepeat/calendar"; // Redirect with an error
             }
 
             event.setStartTime(startDateTime);
@@ -525,17 +531,23 @@ public class EventController {
             // Save the event using EventService.
             boolean success = eventService.saveEvent(event);
             if (success) {
-                redirectAttributes.addFlashAttribute("message", "Event created successfully!");
+                redirectAttributes.addFlashAttribute("message", "Event created successfully by AI!");
                 return "redirect:/sleepplanrepeat/calendar";
             } else {
-                redirectAttributes.addFlashAttribute("error", "Failed to create event. Please check your inputs.");
-                return "redirect:/sleepplanrepeat/events/ai-create";
+                redirectAttributes.addFlashAttribute("error", "Failed to save AI-generated event. Please try again.");
+                return "redirect:/sleepplanrepeat/calendar"; // Redirect with an error
             }
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to process AI event: " + e.getMessage());
-            return "redirect:/sleepplanrepeat/events/ai-create";
+            return "redirect:/sleepplanrepeat/calendar"; // Redirect with an error
         }
+    }
+
+    @GetMapping("/ai-create")
+    public String aiCreateEventForm() {
+        // We no longer need a dedicated form, so we can directly redirect to the calendar.
+        return "redirect:/sleepplanrepeat/calendar";
     }
 
     // Refactored Scheduling Suggestions
@@ -570,4 +582,17 @@ public class EventController {
             return "redirect:/sleepplanrepeat/calendar";
         }
     }
+
+
+    @PostMapping("/generate-description")
+    public ResponseEntity<String> generateDescription(@RequestParam String descriptionSeed, Authentication auth) {
+        Optional<User> userOpt = getAuthenticatedUser(auth);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(401).body("Please log in");
+        }
+        String prompt = "Expand on the following event description idea: " + descriptionSeed;
+        String generatedDescription = geminiService.getPrompt(prompt);
+        return ResponseEntity.ok(generatedDescription);
+    }
+
 }

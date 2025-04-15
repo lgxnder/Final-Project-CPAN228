@@ -252,6 +252,8 @@ public class EventController {
                             existingEvent.setDescription(event.getDescription());
                             existingEvent.setExternalLink(externalLink);
                             existingEvent.setFocusTag(focusTag);
+                            existingEvent.setColor(event.getColor()); // Set the color from the form
+
 
                             boolean success = eventService.saveEvent(existingEvent);
 
@@ -363,6 +365,7 @@ public class EventController {
             event.setEndTime(endDateTime);
             event.setExternalLink(externalLink);
             event.setFocusTag(focusTag);
+            event.setColor(event.getColor()); // Set the color from the form
 
             // Ensure that no users are associated with this event as it is global.
             event.setUser(null);

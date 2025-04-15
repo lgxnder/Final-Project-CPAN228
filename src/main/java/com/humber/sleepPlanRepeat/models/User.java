@@ -26,6 +26,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String email;
+    private boolean enableEmailNotifications = false;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Event> events;
 }

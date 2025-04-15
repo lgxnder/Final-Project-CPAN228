@@ -56,4 +56,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("year") int year,
             @Param("month") int month
     );
+
+    @Query("SELECT e FROM Event e WHERE e.startTime BETWEEN :start AND :end AND e.user IS NOT NULL")
+    List<Event> findEventsStartingBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

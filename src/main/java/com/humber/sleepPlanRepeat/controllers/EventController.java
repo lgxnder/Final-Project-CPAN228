@@ -632,4 +632,15 @@ public class EventController {
             return "redirect:/sleepplanrepeat/calendar";
         }
     }
+
+    @PostMapping("/generate-description")
+    public ResponseEntity<String> generateDescription(@RequestParam String descriptionSeed, Authentication auth) {
+        Optional<User> userOpt = getAuthenticatedUser(auth);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(401).body("Please log in");
+        }
+        String prompt = "Expand on the following event description idea: " + descriptionSeed;
+        String generatedDescription = geminiService.getPrompt(prompt);
+        return ResponseEntity.ok(generatedDescription);
+    }
 }

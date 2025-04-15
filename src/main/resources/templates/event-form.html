@@ -7,80 +7,181 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+
         :root {
+
             --primary-color: #6c63ff;
+
             --secondary-color: #4f46e5;
+
             --accent-color: #8b5cf6;
+
             --light-color: #f3f4f6;
+
             --dark-color: #1f2937;
+
             --success-color: #10b981;
+
             --warning-color: #f59e0b;
+
             --danger-color: #ef4444;
+
         }
+
+
+
         body {
+
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
             background-color: var(--light-color);
+
             min-height: 100vh;
+
         }
+
+
+
         .navbar-brand {
+
             font-weight: 700;
+
         }
+
+
+
         .form-container {
+
             background-color: white;
+
             border-radius: 10px;
+
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
             overflow: hidden;
+
             padding: 0;
+
         }
+
+
+
         .form-header {
+
             background-color: var(--primary-color);
+
             color: white;
+
             padding: 20px;
+
         }
+
+
+
         .form-body {
+
             padding: 30px;
+
         }
+
+
+
         .form-section {
+
             margin-bottom: 30px;
+
         }
+
+
+
         .form-section-title {
+
             font-weight: 600;
+
             margin-bottom: 15px;
+
             color: var(--dark-color);
+
             border-bottom: 1px solid #e5e7eb;
+
             padding-bottom: 10px;
+
         }
+
+
+
         .form-actions {
+
             display: flex;
+
             gap: 10px;
+
             justify-content: flex-end;
+
             margin-top: 20px;
+
         }
+
+
+
         .btn-cancel {
+
             background-color: #e5e7eb;
+
             color: #1f2937;
+
         }
+
+
+
         .btn-submit {
+
             background-color: var(--primary-color);
+
             color: white;
+
         }
+
+
+
         .form-floating label {
+
             color: #6b7280;
+
         }
+
+
+
         .form-floating > .form-control:focus,
+
         .form-floating > .form-control:not(:placeholder-shown) {
+
             padding-top: 1.625rem;
+
             padding-bottom: 0.625rem;
+
         }
+
+
+
         .sign-out-btn {
+
             background-color: rgba(255, 255, 255, 0.2);
+
             border: 1px solid rgba(255, 255, 255, 0.4);
+
             color: white;
+
             border-radius: 5px;
+
             padding: 5px 15px;
+
             margin-left: 10px;
+
             transition: all 0.3s;
+
         }
+
         .sign-out-btn:hover {
             background-color: rgba(255, 255, 255, 0.3);
             border-color: rgba(255, 255, 255, 0.6);
@@ -94,34 +195,73 @@
     </style>
 </head>
 <body>
+
 <div th:replace="partials/header :: header"></div>
+
 <div class="container py-4">
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
         <span th:text="${error}">Error message</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+
     <div class="form-container">
         <div class="form-header">
             <h2 class="mb-0" th:text="${isEdit != null && isEdit ? 'Edit Event' : 'Create New Event'}">Create New Event</h2>
             <p class="mb-0" th:if="${isGlobal != null && isGlobal}"><i class="fas fa-globe me-2"></i>Global Event (visible to all users)</p>
         </div>
+
         <div class="form-body">
-            <form th:action="${isEdit != null && isEdit ? '/sleepplanrepeat/events/edit/' + event.id : (isGlobal != null && isGlobal ? '/sleepplanrepeat/events/create-global' : '/sleepplanrepeat/events/create')}" method="post" th:object="${event}">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <input type="hidden" name="startTime" th:value="${event.startTime}"/>
-                <input type="hidden" name="endTime" th:value="${event.endTime}"/>
+            <form th:action="${isEdit != null && isEdit ? '/sleepplanrepeat/events/edit/' + event.id : (isGlobal != null && isGlobal ? '/sleepplanrepeat/events/create-global' : '/sleepplanrepeat/events/create')}"
+                  method="post"
+                  th:object="${event}">
+
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <input type="hidden" name="startTime" th:value="${event.startTime}" />
+                <input type="hidden" name="endTime" th:value="${event.endTime}" />
+
                 <div class="form-section">
                     <h3 class="form-section-title">Basic Information</h3>
+
                     <div class="mb-3">
                         <label for="title" class="form-label">Event Title <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="title" name="title" th:field="*{title}" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" th:field="*{description}" rows="4"></textarea>
                         <div class="form-text">Provide details about this event.</div>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="descriptionSeed" class="form-label">Brief Idea for AI Description (Optional)</label>
+                        <textarea class="form-control" id="descriptionSeed" name="descriptionSeed" rows="2"></textarea>
+                        <div class="form-text">Enter a few keywords or a short sentence to help AI generate a description.</div>
+                    </div>
+                    <button type="button" class="btn btn-outline-info mb-3" onclick="generateDescription()">
+                        <i class="fas fa-magic me-1"></i> Generate Description with AI
+                    </button>
                 </div>
+
+                <div class="form-section">
+                    <h3 class="form-section-title">Additional Details</h3>
+
+                    <div class="mb-3">
+                        <label for="externalLink" class="form-label">External Link (e.g., Zoom, Document)</label>
+                        <input type="url" class="form-control" id="externalLink" name="externalLink" th:field="*{externalLink}"
+                               placeholder="Enter URL (optional)">
+                        <div class="form-text">Link to a meeting, document, or other resource.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="focusTag" class="form-label">Focus Tag (e.g., #Work, #Personal)</label>
+                        <input type="text" class="form-control" id="focusTag" name="focusTag" th:field="*{focusTag}"
+                               placeholder="Enter a single-word tag (optional)">
+                        <div class="form-text">A brief tag to describe the event's focus.</div>
+                    </div>
+                </div>
+
                 <div class="form-section">
                     <h3 class="form-section-title">Additional Details</h3>
 
@@ -147,29 +287,39 @@
 
                 <div class="form-section">
                     <h3 class="form-section-title">Date and Time</h3>
+
                     <div class="row g-3">
                         <div class="col-md-6 mb-3">
                             <label for="startDate" class="form-label">Start Date <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="startDate" name="startDate" th:value="${#temporals.format(event.startTime, 'yyyy-MM-dd')}" required>
+                            <input type="date" class="form-control" id="startDate" name="startDate"
+                                   th:value="${#temporals.format(event.startTime, 'yyyy-MM-dd')}" required>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="startTime" class="form-label">Start Time <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control" id="startTime" name="startTimeInput" th:value="${#temporals.format(event.startTime, 'HH:mm')}" required>
+                            <input type="time" class="form-control" id="startTime" name="startTimeInput"
+                                   th:value="${#temporals.format(event.startTime, 'HH:mm')}" required>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="endDate" class="form-label">End Date <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="endDate" name="endDate" th:value="${#temporals.format(event.endTime, 'yyyy-MM-dd')}" required>
+                            <input type="date" class="form-control" id="endDate" name="endDate"
+                                   th:value="${#temporals.format(event.endTime, 'yyyy-MM-dd')}" required>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="endTime" class="form-label">End Time <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control" id="endTime" name="endTimeInput" th:value="${#temporals.format(event.endTime, 'HH:mm')}" required>
+                            <input type="time" class="form-control" id="endTime" name="endTimeInput"
+                                   th:value="${#temporals.format(event.endTime, 'HH:mm')}" required>
                         </div>
                     </div>
+
                     <div class="form-text mb-3">
                         <i class="fas fa-info-circle me-1 text-primary"></i>
                         End time must be after start time.
                     </div>
                 </div>
+
                 <div class="form-actions">
                     <a href="/sleepplanrepeat/calendar" class="btn btn-cancel">
                         <i class="fas fa-times me-1"></i> Cancel
@@ -183,9 +333,11 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
         const startDateInput = document.getElementById('startDate');
         const startTimeInput = document.getElementById('startTimeInput');
@@ -194,7 +346,7 @@
         const descriptionInput = document.getElementById('description');
         const descriptionSeedInput = document.getElementById('descriptionSeed');
 
-        form.addEventListener('submit', function (event) {
+        form.addEventListener('submit', function(event) {
             const startDateTime = new Date(startDateInput.value + 'T' + startTimeInput.value);
             const endDateTime = new Date(endDateInput.value + 'T' + endTimeInput.value);
 
@@ -207,7 +359,27 @@
         });
     });
 
+    function generateDescription() {
+        const descriptionSeed = document.getElementById('descriptionSeed').value;
+        fetch('/sleepplanrepeat/events/generate-description', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'descriptionSeed=' + encodeURIComponent(descriptionSeed)
+        })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('description').value = data;
+            })
+            .catch(error => {
+                console.error('Error generating description:', error);
+                alert('Failed to generate description.');
+            });
+    }
 </script>
+
 <div th:replace="partials/footer :: footer"></div>
+
 </body>
 </html>

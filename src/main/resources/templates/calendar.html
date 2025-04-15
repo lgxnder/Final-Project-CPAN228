@@ -166,131 +166,6 @@
             transform: scale(1.1);
             background-color: var(--secondary-color);
         }
-        /* Styles for the AI menu and overlay */
-        .ai-menu {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            width: 300px;
-            max-width: 90vw;
-            overflow: hidden;
-            transform: scale(0);
-            transform-origin: bottom right;
-            transition: transform 0.3s ease-out;
-            z-index: 999;
-        }
-        .ai-menu.show {
-            transform: scale(1);
-        }
-        .ai-menu-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .ai-menu-header h6 {
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .ai-menu-body {
-            padding: 15px;
-        }
-        .ai-input-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
-        .ai-input {
-            width: 100%;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 10px 40px 10px 12px;
-            font-size: 0.95rem;
-            transition: border-color 0.3s;
-        }
-        .ai-input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
-        }
-        .ai-send-btn {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
-        .ai-send-btn:hover {
-            background-color: rgba(108, 99, 255, 0.1);
-        }
-        .ai-menu-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .ai-menu-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 6px;
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .ai-menu-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .ai-menu-primary:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-        .ai-menu-secondary {
-            background-color: var(--light-color);
-            color: var(--dark-color);
-        }
-        .ai-menu-secondary:hover {
-            background-color: #e5e7eb;
-            transform: translateY(-2px);
-        }
-        .ai-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            z-index: 998;
-        }
-        .ai-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
         .sign-out-btn {
             background-color: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -332,13 +207,9 @@
 <!-- Header -->
 <div th:replace="partials/header :: header"></div>
 
-<!-- Greeting Message -->
-<div th:if="${personalizedMessage}" class="alert alert-info">
-    <p th:text="${personalizedMessage}"></p>
-</div>
-
 <!-- Main Content -->
 <div class="container py-4">
+
     <!-- Calendar Section -->
     <div class="calendar-container mb-4">
         <!-- Calendar Header -->
@@ -458,173 +329,16 @@
     </div>
 </div>
 
-<!-- AI Floating Window Elements -->
-<!-- AI Overlay -->
-<div id="aiOverlay" class="ai-overlay"></div>
-<!-- AI Menu -->
-<div id="aiMenu" class="ai-menu">
-    <div class="ai-menu-header">
-        <h6>
-            <i class="fas fa-robot"></i> AI Assistant
-        </h6>
-        <button id="aiCloseBtn" class="btn-close btn-close-white" aria-label="Close"></button>
-    </div>
-    <div class="ai-menu-body">
-        <div class="ai-input-container">
-            <input type="text" id="aiPrompt" class="ai-input" placeholder="Ask AI to create an event..." aria-label="AI prompt">
-            <button id="aiSendBtn" class="ai-send-btn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-        <div class="ai-menu-buttons">
-            <a href="/sleepplanrepeat/events/create" class="ai-menu-btn ai-menu-secondary">
-                <i class="fas fa-edit"></i> Manual Form
-            </a>
-            <button id="aiCreateBtn" class="ai-menu-btn ai-menu-primary">
-                <i class="fas fa-magic"></i> AI Create
-            </button>
-        </div>
-    </div>
-</div>
-
 <!-- Floating Add Event Button -->
-<button id="addEventBtn" class="add-event-btn">
+<a id="addEventBtn" class="add-event-btn" href="/sleepplanrepeat/events/create">
     <i class="fas fa-plus"></i>
-</button>
+</a>
 
 <!-- Footer -->
 <div th:replace="partials/footer :: footer"></div>
 
 <!-- Bootstrap JS Bundle with Popper -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
-<!-- AI Menu Interaction Script -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const addEventBtn = document.getElementById('addEventBtn');
-        const aiMenu = document.getElementById('aiMenu');
-        const aiOverlay = document.getElementById('aiOverlay');
-        const aiCloseBtn = document.getElementById('aiCloseBtn');
-        const aiSendBtn = document.getElementById('aiSendBtn');
-        const aiCreateBtn = document.getElementById('aiCreateBtn');
-        const aiPrompt = document.getElementById('aiPrompt');
-
-        // Open AI menu when the addEvent button is clicked
-        addEventBtn.addEventListener('click', function() {
-            aiMenu.classList.add('show');
-            aiOverlay.classList.add('show');
-            setTimeout(() => {
-                aiPrompt.focus();
-            }, 300);
-        });
-
-        // Function to close the AI menu
-        function closeAiMenu() {
-            aiMenu.classList.remove('show');
-            aiOverlay.classList.remove('show');
-        }
-
-        aiCloseBtn.addEventListener('click', closeAiMenu);
-        aiOverlay.addEventListener('click', closeAiMenu);
-
-        //Validation for the AI prompt
-        function isValidPrompt(prompt) {
-            //Check if prompt must be more than 3 characters
-            return prompt.length > 3;
-        }
-
-        // Handle AI prompt submission
-        function handleAiPrompt() {
-            const promptText = aiPrompt.value.trim();
-            if (promptText === '') {
-                alert('Please enter a prompt before submitting!');
-            } else if (!isValidPrompt(promptText)) {
-                alert('Sorry, the AI could not understand your prompt or your prompt is shorter then 3 characters!');
-            } else {
-                console.log('Processing AI prompt:', promptText);
-                window.location.href = `/sleepplanrepeat/events/ai-create?prompt=${encodeURIComponent(promptText)}`;
-            }
-        }
-
-        aiSendBtn.addEventListener('click', handleAiPrompt);
-        aiCreateBtn.addEventListener('click', handleAiPrompt);
-
-        // Allow pressing Enter key inside the input to trigger submission
-        aiPrompt.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                handleAiPrompt();
-            }
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        const addEventBtn = document.getElementById('addEventBtn');
-        const aiMenu = document.getElementById('aiMenu');
-        const aiOverlay = document.getElementById('aiOverlay');
-        const aiCloseBtn = document.getElementById('aiCloseBtn');
-        const aiSendBtn = document.getElementById('aiSendBtn');
-        const aiCreateBtn = document.getElementById('aiCreateBtn');
-        const aiPrompt = document.getElementById('aiPrompt');
-
-        // Open AI menu when the addEvent button is clicked
-        addEventBtn.addEventListener('click', function() {
-            aiMenu.classList.add('show');
-            aiOverlay.classList.add('show');
-            setTimeout(() => {
-                aiPrompt.focus();
-            }, 300);
-        });
-
-        // Function to close the AI menu
-        function closeAiMenu() {
-            aiMenu.classList.remove('show');
-            aiOverlay.classList.remove('show');
-        }
-
-        aiCloseBtn.addEventListener('click', closeAiMenu);
-        aiOverlay.addEventListener('click', closeAiMenu);
-
-        // Handle the AI prompt submission
-        function handleAiPrompt() {
-            const promptText = aiPrompt.value.trim();
-            if (promptText) {
-                console.log('Processing AI prompt:', promptText);
-                fetch('/sleepplanrepeat/events/ai-create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        [csrfHeader]: csrfToken, // Add the CSRF header with the token
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'naturalLanguageInput=' + encodeURIComponent(promptText)
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            window.location.href = '/sleepplanrepeat/calendar'; // Redirect on success
-                        } else {
-                            return response.text().then(errorMessage => {
-                                alert('Failed to create event: ' + errorMessage); // Display error
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error sending AI prompt:', error);
-                        alert('An error occurred while communicating with the server.');
-                    });
-            }
-        }
-
-        aiSendBtn.addEventListener('click', handleAiPrompt);
-        aiCreateBtn.addEventListener('click', handleAiPrompt);
-        aiPrompt.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                handleAiPrompt();
-            }
-        });
-    });
-</script>
-
-
 
 </body>
 </html>

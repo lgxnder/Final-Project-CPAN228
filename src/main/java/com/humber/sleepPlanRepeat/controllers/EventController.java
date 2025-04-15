@@ -4,20 +4,13 @@ import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import com.humber.sleepPlanRepeat.services.EventService;
-import com.humber.sleepPlanRepeat.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -27,19 +20,16 @@ public class EventController {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventService eventService;
-    private final UserService userService;
 
     // Constructor injection.
     public EventController(
             EventRepository eventRepository,
             UserRepository userRepository,
-            EventService eventService,
-            UserService userService
+            EventService eventService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.eventService = eventService;
-        this.userService = userService;
     }
 
     @Value("sleepPlanRepeat")
@@ -131,20 +121,13 @@ public class EventController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            // Parse and format DateTime strings into LocalTime and LocalDate.
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            // Parse dates using EventService.
+            LocalDateTime startDateTime = eventService.parseDateTime(startDate, startTime);
+            LocalDateTime endDateTime = eventService.parseDateTime(endDate, endTime);
 
-            LocalDate parsedStartDate = LocalDate.parse(startDate, dateFormatter);
-            LocalTime parsedStartTime = LocalTime.parse(startTime, timeFormatter);
-            LocalDateTime startDateTime = LocalDateTime.of(parsedStartDate, parsedStartTime);
-
-            LocalDate parsedEndDate = LocalDate.parse(endDate, dateFormatter);
-            LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
-            LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
 
             // Validate that the end time occurs after the start time of the event.
-            if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
+            if (!eventService.isEndTimeValid(startDateTime, endDateTime)) {
                 redirectAttributes.addFlashAttribute("error", "End time must be after start time");
                 return "redirect:/sleepplanrepeat/events/create";
             }
@@ -250,20 +233,12 @@ public class EventController {
 
                         if (user.getId() == existingEvent.getUser().getId()) {
 
-                            // Parse and format DateTime strings into LocalTime and LocalDate.
-                            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-                            LocalDate parsedStartDate = LocalDate.parse(startDate, dateFormatter);
-                            LocalTime parsedStartTime = LocalTime.parse(startTime, timeFormatter);
-                            LocalDateTime startDateTime = LocalDateTime.of(parsedStartDate, parsedStartTime);
-
-                            LocalDate parsedEndDate = LocalDate.parse(endDate, dateFormatter);
-                            LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
-                            LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
+                            // Parse dates using EventService.
+                            LocalDateTime startDateTime = eventService.parseDateTime(startDate, startTime);
+                            LocalDateTime endDateTime = eventService.parseDateTime(endDate, endTime);
 
                             // Validate that the end time occurs after the start time of the event.
-                            if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
+                            if (!eventService.isEndTimeValid(startDateTime, endDateTime)) {
                                 redirectAttributes.addFlashAttribute("error", "End time must be after start time");
                                 return "redirect:/sleepplanrepeat/events/edit/" + id;
                             }
@@ -278,13 +253,16 @@ public class EventController {
                             existingEvent.setExternalLink(externalLink);
                             existingEvent.setFocusTag(focusTag);
 
-                            // Save the updated event.
-                            eventRepository.save(existingEvent);
+                            boolean success = eventService.saveEvent(existingEvent);
 
-                            redirectAttributes.addFlashAttribute("message", "Event updated successfully!");
-
-                            // Redirect to the event-view.
-                            return "redirect:/sleepplanrepeat/events/view/" + id;
+                            if (success) {
+                                redirectAttributes.addFlashAttribute("message", "Event updated successfully!");
+                                // Redirect to the event-view.
+                                return "redirect:/sleepplanrepeat/events/view/" + id;
+                            } else {
+                                redirectAttributes.addFlashAttribute("error", "Failed to update event. Please check your inputs.");
+                                return "redirect:/sleepplanrepeat/events/edit/" + id;
+                            }
                         }
                     }
                 }
@@ -370,20 +348,12 @@ public class EventController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            // Parse and format DateTime strings into LocalTime and LocalDate.
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-            LocalDate parsedStartDate = LocalDate.parse(startDate, dateFormatter);
-            LocalTime parsedStartTime = LocalTime.parse(startTime, timeFormatter);
-            LocalDateTime startDateTime = LocalDateTime.of(parsedStartDate, parsedStartTime);
-
-            LocalDate parsedEndDate = LocalDate.parse(endDate, dateFormatter);
-            LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
-            LocalDateTime endDateTime = LocalDateTime.of(parsedEndDate, parsedEndTime);
+            // Parse dates using EventService.
+            LocalDateTime startDateTime = eventService.parseDateTime(startDate, startTime);
+            LocalDateTime endDateTime = eventService.parseDateTime(endDate, endTime);
 
             // Validate that the end time occurs after the start time of the event.
-            if (endDateTime.isBefore(startDateTime) || endDateTime.isEqual(startDateTime)) {
+            if (!eventService.isEndTimeValid(startDateTime, endDateTime)) {
                 redirectAttributes.addFlashAttribute("error", "End time must be after start time");
                 return "redirect:/sleepplanrepeat/events/create-global";
             }
@@ -407,44 +377,10 @@ public class EventController {
                 redirectAttributes.addFlashAttribute("error", "Failed to create global event. Please check your inputs.");
                 return "redirect:/sleepplanrepeat/events/create-global";
             }
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error creating global event: " + e.getMessage());
             return "redirect:/sleepplanrepeat/events/create-global";
         }
-    }
-
-
-// Gemini Functionality Section in EventController
-
-    // Private helper to get the authenticated user using UserService.
-    private Optional<User> getAuthenticatedUser(Authentication auth) {
-        if (auth == null || !auth.isAuthenticated()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(userService.getUserByUsername(auth.getName()));
-    }
-
-    // Private helper to parse a date and time string into a LocalDateTime.
-    private LocalDateTime parseLocalDateTime(String dateStr, String timeStr) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalDate date = LocalDate.parse(dateStr, dateFormatter);
-        LocalTime time = LocalTime.parse(timeStr, timeFormatter);
-        return LocalDateTime.of(date, time);
-    }
-
-
-    // Private helper to parse and validate date and time.
-    private LocalDateTime parseDateTime(String date, String time) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalDate parsedDate = LocalDate.parse(date, dateFormatter);
-        LocalTime parsedTime = LocalTime.parse(time, timeFormatter);
-        return LocalDateTime.of(parsedDate, parsedTime);
-    }
-
-    // Private helper to validate event timing.
-    private boolean isEndTimeValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return endDateTime.isAfter(startDateTime);
     }
 }

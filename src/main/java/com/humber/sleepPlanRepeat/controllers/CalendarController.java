@@ -5,8 +5,6 @@ import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import com.humber.sleepPlanRepeat.services.CalendarService;
-import com.humber.sleepPlanRepeat.services.UserService;
-import com.humber.sleepPlanRepeat.services.EventService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -29,22 +27,16 @@ public class CalendarController {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CalendarService calendarService;
-    private final UserService userService;
-    private final EventService eventService;
 
     // Constructor injection
     public CalendarController(
             EventRepository eventRepository,
             UserRepository userRepository,
-            CalendarService calendarService,
-            UserService userService,
-            EventService eventService
+            CalendarService calendarService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.calendarService = calendarService;
-        this.userService = userService;
-        this.eventService = eventService;
     }
 
     @Value("sleepPlanRepeat")

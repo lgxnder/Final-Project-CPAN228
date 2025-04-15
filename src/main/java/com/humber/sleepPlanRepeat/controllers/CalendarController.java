@@ -6,11 +6,9 @@ import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import com.humber.sleepPlanRepeat.services.CalendarService;
 import com.humber.sleepPlanRepeat.services.UserService;
-import com.humber.sleepPlanRepeat.services.GeminiService;
 import com.humber.sleepPlanRepeat.services.EventService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +31,6 @@ public class CalendarController {
     private final CalendarService calendarService;
     private final UserService userService;
     private final EventService eventService;
-    private final GeminiService geminiService;
 
     // Constructor injection
     public CalendarController(
@@ -41,15 +38,13 @@ public class CalendarController {
             UserRepository userRepository,
             CalendarService calendarService,
             UserService userService,
-            EventService eventService,
-            GeminiService geminiService
+            EventService eventService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.calendarService = calendarService;
         this.userService = userService;
         this.eventService = eventService;
-        this.geminiService = geminiService;
     }
 
     @Value("sleepPlanRepeat")
@@ -294,24 +289,6 @@ public class CalendarController {
         model.addAttribute("events", monthEvents);
 
         return "month";
-    }
-
-
-// Attempts to create a personalized message with Gemini AI based on user information.
-// Returns calendar view with message.
-    @GetMapping("/calendar2")
-    public String showCalendar(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userService.getUserByUsername(username);
-        List<Event> userEvents = eventService.findEventsByUserId(user.getId());
-        String personalizedMessage = geminiService.getPersonalizedMessage(username, userEvents);
-
-        model.addAttribute("personalizedMessage", personalizedMessage);
-        model.addAttribute("events", userEvents);
-
-        return "calendar";
     }
 
 }

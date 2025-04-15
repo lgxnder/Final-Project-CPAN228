@@ -3,7 +3,6 @@ import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.services.EventService;
 import com.humber.sleepPlanRepeat.services.UserService;
-import com.humber.sleepPlanRepeat.services.GeminiService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,15 +20,13 @@ import java.util.List;
 public class AuthController {
 
     private final UserService userService;
-    private final GeminiService geminiService;  // Inject GeminiService
     private final EventService eventService;
 
 
     // Constructor injection for UserService and GeminiService.
     @Autowired
-    public AuthController(UserService userService, GeminiService geminiService, EventService eventService) {
+    public AuthController(UserService userService, EventService eventService) {
         this.userService = userService;
-        this.geminiService = geminiService;
         this.eventService = eventService;
     }
 
@@ -84,16 +81,10 @@ public class AuthController {
 
         User user = userService.getUserByUsername(username);
         List<Event> userEvents = eventService.findEventsByUserId(user.getId());
-        String personalizedMessage = geminiService.getPersonalizedMessage(username, userEvents);
-
-        // Set the personalized message as a flash attribute.
-        redirectAttributes.addFlashAttribute("personalizedMessage", personalizedMessage);
 
         // Redirect to the calendar page.
         return "redirect:/sleepplanrepeat/calendar/";
     }
-
-
 
     // Logout.
     @GetMapping("/logout")

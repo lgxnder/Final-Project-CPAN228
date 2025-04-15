@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SleepPlanRepeat - Calendar</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
@@ -531,6 +533,71 @@
             if (promptText) {
                 console.log('Processing AI prompt:', promptText);
                 window.location.href = `/sleepplanrepeat/events/ai-create?prompt=${encodeURIComponent(promptText)}`;
+            }
+        }
+
+        aiSendBtn.addEventListener('click', handleAiPrompt);
+        aiCreateBtn.addEventListener('click', handleAiPrompt);
+        aiPrompt.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                handleAiPrompt();
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const addEventBtn = document.getElementById('addEventBtn');
+        const aiMenu = document.getElementById('aiMenu');
+        const aiOverlay = document.getElementById('aiOverlay');
+        const aiCloseBtn = document.getElementById('aiCloseBtn');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+        const aiCreateBtn = document.getElementById('aiCreateBtn');
+        const aiPrompt = document.getElementById('aiPrompt');
+
+        // Open AI menu when the addEvent button is clicked
+        addEventBtn.addEventListener('click', function() {
+            aiMenu.classList.add('show');
+            aiOverlay.classList.add('show');
+            setTimeout(() => {
+                aiPrompt.focus();
+            }, 300);
+        });
+
+        // Function to close the AI menu
+        function closeAiMenu() {
+            aiMenu.classList.remove('show');
+            aiOverlay.classList.remove('show');
+        }
+
+        aiCloseBtn.addEventListener('click', closeAiMenu);
+        aiOverlay.addEventListener('click', closeAiMenu);
+
+        // Handle the AI prompt submission
+        function handleAiPrompt() {
+            const promptText = aiPrompt.value.trim();
+            if (promptText) {
+                console.log('Processing AI prompt:', promptText);
+                fetch('/sleepplanrepeat/events/ai-create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        [csrfHeader]: csrfToken, // Add the CSRF header with the token
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'naturalLanguageInput=' + encodeURIComponent(promptText)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '/sleepplanrepeat/calendar'; // Redirect on success
+                        } else {
+                            return response.text().then(errorMessage => {
+                                alert('Failed to create event: ' + errorMessage); // Display error
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending AI prompt:', error);
+                        alert('An error occurred while communicating with the server.');
+                    });
             }
         }
 

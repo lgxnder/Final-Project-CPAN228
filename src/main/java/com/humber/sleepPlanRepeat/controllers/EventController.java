@@ -125,6 +125,8 @@ public class EventController {
             @RequestParam("startTimeInput") String startTime,
             @RequestParam("endDate") String endDate,
             @RequestParam("endTimeInput") String endTime,
+            @RequestParam(value = "externalLink", required = false) String externalLink,
+            @RequestParam(value = "focusTag", required = false) String focusTag,
             Authentication authentication,
             RedirectAttributes redirectAttributes
     ) {
@@ -150,6 +152,8 @@ public class EventController {
             // Update event with parsed and formatted times.
             event.setStartTime(startDateTime);
             event.setEndTime(endDateTime);
+            event.setExternalLink(externalLink); // ADD THIS LINE
+            event.setFocusTag(focusTag);         // ADD THIS LINE
 
             // Check if the user is authenticated properly.
             if (authentication != null && authentication.isAuthenticated()) {
@@ -223,6 +227,8 @@ public class EventController {
             @RequestParam("startTimeInput") String startTime,
             @RequestParam("endDate") String endDate,
             @RequestParam("endTimeInput") String endTime,
+            @RequestParam(value = "externalLink", required = false) String externalLink,
+            @RequestParam(value = "focusTag", required = false) String focusTag,
             Authentication authentication,
             RedirectAttributes redirectAttributes
     ) {
@@ -269,6 +275,8 @@ public class EventController {
                             // Update event's title and description fields.
                             existingEvent.setTitle(event.getTitle());
                             existingEvent.setDescription(event.getDescription());
+                            existingEvent.setExternalLink(externalLink);
+                            existingEvent.setFocusTag(focusTag);
 
                             // Save the updated event.
                             eventRepository.save(existingEvent);
@@ -357,6 +365,8 @@ public class EventController {
             @RequestParam("startTimeInput") String startTime,
             @RequestParam("endDate") String endDate,
             @RequestParam("endTimeInput") String endTime,
+            @RequestParam(value = "externalLink", required = false) String externalLink,
+            @RequestParam(value = "focusTag", required = false) String focusTag,
             RedirectAttributes redirectAttributes
     ) {
         try {
@@ -381,6 +391,8 @@ public class EventController {
             // Update event with parsed and formatted dates and times.
             event.setStartTime(startDateTime);
             event.setEndTime(endDateTime);
+            event.setExternalLink(externalLink);
+            event.setFocusTag(focusTag);
 
             // Ensure that no users are associated with this event as it is global.
             event.setUser(null);

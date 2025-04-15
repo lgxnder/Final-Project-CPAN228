@@ -4,6 +4,7 @@ import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import com.humber.sleepPlanRepeat.services.EventService;
+import com.humber.sleepPlanRepeat.services.OpenAIService;
 import com.humber.sleepPlanRepeat.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -22,18 +23,21 @@ public class EventController {
     private final UserRepository userRepository;
     private final EventService eventService;
     private final UserService userService;
+    private final OpenAIService openAIService;
 
     // Constructor injection.
     public EventController(
             EventRepository eventRepository,
             UserRepository userRepository,
             EventService eventService,
-            UserService userService
+            UserService userService,
+            OpenAIService openAIService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.eventService = eventService;
         this.userService = userService;
+        this.openAIService = openAIService;
     }
 
     @Value("sleepPlanRepeat")
@@ -310,6 +314,101 @@ public class EventController {
 
             // If event could not be found, redirect.
             return "redirect:/sleepplanrepeat/calendar?error=Event not found";
+        }
+    }
+
+    // Generate event with AI.
+    @GetMapping("/generate")
+    public String generateEventForm(Model model, Authentication authentication) {
+        // Check if user is authenticated.
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login?message=Please log in to create events";
+        }
+
+        // Redirect to AI form.
+        model.addAttribute("isAIGeneration", true);
+        return "event-ai-form";
+    }
+
+    // Process AI-generated event.
+    @PostMapping("/generate")
+    public String generateEvent(
+            @RequestParam("description") String description,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        try {
+            // Check if user is authenticated.
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login?message=Please log in to create events";
+            }
+
+            // Get the current user.
+            String username = authentication.getName();
+            Optional<User> userOpt = userRepository.findByUsername(username);
+
+            if (!userOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                return "redirect:/sleepplanrepeat/events/generate";
+            }
+
+            User user = userOpt.get();
+
+            // Generate the event using OpenAI.
+            Event generatedEvent = openAIService.generateEvent(description, user);
+
+            // Preview the generated event before saving.
+            model.addAttribute("event", generatedEvent);
+            model.addAttribute("isAIGenerated", true);
+
+            return "event-ai-preview";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error generating event: " + e.getMessage());
+            return "redirect:/sleepplanrepeat/events/generate";
+        }
+    }
+
+    // Save AI-generated event.
+    @PostMapping("/save-generated")
+    public String saveGeneratedEvent(
+            @ModelAttribute("event") Event event,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            // Check if user is authenticated.
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login?message=Please log in to create events";
+            }
+
+            // Get the current user.
+            String username = authentication.getName();
+            Optional<User> userOpt = userRepository.findByUsername(username);
+
+            if (!userOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                return "redirect:/sleepplanrepeat/calendar";
+            }
+
+            // Set the user for the event.
+            event.setUser(userOpt.get());
+
+            // Save the event.
+            boolean success = eventService.saveEvent(event);
+
+            if (success) {
+                redirectAttributes.addFlashAttribute("message", "AI-generated event saved successfully!");
+                return "redirect:/sleepplanrepeat/calendar";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Failed to save AI-generated event");
+                return "redirect:/sleepplanrepeat/events/generate";
+            }
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error saving generated event: " + e.getMessage());
+            return "redirect:/sleepplanrepeat/events/generate";
         }
     }
 

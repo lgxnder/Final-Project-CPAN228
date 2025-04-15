@@ -260,6 +260,11 @@
                                placeholder="Enter a single-word tag (optional)">
                         <div class="form-text">A brief tag to describe the event's focus.</div>
                     </div>
+                    <div class="mb-3">
+                        <label for="color" class="form-label">Event Color</label>
+                        <input type="color" class="form-control form-control-color" id="color" name="color" th:field="*{color}" value="#6c63ff">
+                        <div class="form-text">Choose a color to represent this event.</div>
+                    </div>
                 </div>
 
                 <div class="form-section">

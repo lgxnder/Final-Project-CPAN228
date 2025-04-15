@@ -171,6 +171,7 @@ public class EventController {
                     existingEvent.setEndTime(endDateTime);
                     existingEvent.setExternalLink(externalLink); // Set the externalLink
                     existingEvent.setFocusTag(focusTag);         // Set the focusTag
+                    existingEvent.setColor(event.getColor()); // Set the color from the form
 
                     eventRepository.save(existingEvent);
                     redirectAttributes.addFlashAttribute("message", "Event updated successfully!");
@@ -240,6 +241,7 @@ public class EventController {
             event.setEndTime(endDateTime);
             event.setExternalLink(externalLink); // Set the externalLink
             event.setFocusTag(focusTag);         // Set the focusTag
+            event.setColor(event.getColor()); // Set the color from the form
             event.setUser(null);
 
             if (eventService.saveEvent(event)) {

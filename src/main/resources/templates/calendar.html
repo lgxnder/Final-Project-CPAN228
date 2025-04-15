@@ -389,6 +389,7 @@
                     <!-- Events for this day -->
                     <div th:each="event : ${day.events}"
                          th:class="${event.user == null ? 'event event-default' : 'event event-success'}"
+                         th:style="'background-color: ' + ${event.color}"
                          th:text="${event.title}"
                          th:onclick="@{|event.stopPropagation(); window.location.href='/sleepplanrepeat/events/view/${event.id}'|}">
                         Event Title

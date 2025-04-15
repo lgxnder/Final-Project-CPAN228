@@ -29,7 +29,7 @@ public class GeminiService {
         // Sends request to Gemini with post method
         String response = geminiWebClient.post()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/v1/models/gemini-1.5-flash:generateContent")
+                           .path("/v1/models/gemini-1.5-flash:generateContent")
                         .queryParam("key", apiKey)
                         .build())
                 .header("Content-Type", "application/json")

@@ -589,10 +589,6 @@ public class EventController {
         }
         try {
             Optional<Event> eventOpt = eventRepository.findById(Long.parseLong(eventSummary));
-            if (eventOpt.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Event not found");
-                return "redirect:/sleepplanrepeat/calendar";
-            }
             Event event = eventOpt.get();
             String prompt = "Here is the following event details:\n" +
                     "Title: " + event.getTitle() + "\n" +
@@ -625,11 +621,6 @@ public class EventController {
         }
         try {
             Optional<Event> eventOpt = eventRepository.findById(Long.parseLong(followUp));
-            if (eventOpt.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Event not found");
-                return "redirect:/sleepplanrepeat/calendar";
-            }
-
             Event event = eventOpt.get();
             String followUpMessage = followUpService.generateFollowUpMessage(event, outcome);
 

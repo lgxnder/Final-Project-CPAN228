@@ -4,7 +4,6 @@ import com.humber.sleepPlanRepeat.models.Event;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ public class GeminiService {
         // Sends request to Gemini with post method
         String response = geminiWebClient.post()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/v1/models/gemini-1.5-flash:generateContent")
+                           .path("/v1/models/gemini-1.5-flash:generateContent")
                         .queryParam("key", apiKey)
                         .build())
                 .header("Content-Type", "application/json")

@@ -1,5 +1,4 @@
 package com.humber.sleepPlanRepeat.config;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod; // Import HttpMethod
@@ -49,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/sleepplanrepeat/day").permitAll()
                         .requestMatchers("/sleepplanrepeat/calendar", "/sleepplanrepeat/calendar/**").permitAll()
                         .requestMatchers("/sleepplanrepeat/events/view/**").permitAll()
+                        .requestMatchers("/sleepplanrepeat/events/question").permitAll()
 
                         // Allow POST requests to /sleepplanrepeat/events/ai-create for all users
                         .requestMatchers(HttpMethod.POST, "/sleepplanrepeat/events/ai-create").permitAll()

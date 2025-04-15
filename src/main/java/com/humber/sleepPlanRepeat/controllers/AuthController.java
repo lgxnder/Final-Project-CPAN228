@@ -1,5 +1,4 @@
 package com.humber.sleepPlanRepeat.controllers;
-
 import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.services.EventService;

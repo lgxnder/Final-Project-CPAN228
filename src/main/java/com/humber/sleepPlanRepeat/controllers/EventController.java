@@ -253,8 +253,6 @@ public class EventController {
                             existingEvent.setExternalLink(externalLink);
                             existingEvent.setFocusTag(focusTag);
                             existingEvent.setColor(event.getColor()); // Set the color from the form
-
-
                             boolean success = eventService.saveEvent(existingEvent);
 
                             if (success) {

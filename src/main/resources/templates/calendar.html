@@ -200,6 +200,13 @@
                 right: 5vw;
             }
         }
+        .priority-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1.2rem;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -260,7 +267,16 @@
                 <div th:each="day : ${calendarDays}"
                      th:class="${day.isCurrentMonth ? (day.isToday ? 'calendar-day today' : 'calendar-day') : 'calendar-day other-month'}"
                      th:onclick="@{|window.location.href='/sleepplanrepeat/day?date=${day.date}'|}">
+
                     <div class="day-number" th:text="${day.date.getDayOfMonth()}">1</div>
+                    <!-- Priority Icon -->
+                    <div class="priority-icon">
+                        <span th:if="${day.priority == null}" title="No Priority Set">⚪</span>
+                        <span th:if="${day.priority == 'low'}" title="Low Priority">🟢</span>
+                        <span th:if="${day.priority == 'medium'}" title="Medium Priority">🟡</span>
+                        <span th:if="${day.priority == 'high'}" title="High Priority">🔴</span>
+                    </div>
+
                     <!-- Events for this day -->
                     <div th:each="event : ${day.events}"
                          th:class="${event.user == null ? 'event event-default' : 'event event-success'}"

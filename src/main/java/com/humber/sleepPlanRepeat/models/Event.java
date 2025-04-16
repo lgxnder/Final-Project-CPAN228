@@ -40,6 +40,9 @@ public class Event {
     @Column
     private String color;
 
+    @Column(nullable = false)
+    private String priority = ""; // Priority level: Low, Medium, High
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

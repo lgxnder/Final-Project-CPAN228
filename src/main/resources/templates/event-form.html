@@ -252,6 +252,16 @@
                         <div class="form-text">A brief tag to describe the event's focus.</div>
                     </div>
                     <div class="mb-3">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select class="form-control" id="priority" name="priority"  th:field="*{priority}">
+                            <option value="none">No Priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                        <div class="form-text">Set the priority for this event.</div>
+                    </div>
+                    <div class="mb-3">
                         <label for="color" class="form-label">Event Color</label>
                         <input type="color" class="form-control form-control-color" id="color" name="color" th:field="*{color}" value="#6c63ff">
                         <div class="form-text">Choose a color to represent this event.</div>

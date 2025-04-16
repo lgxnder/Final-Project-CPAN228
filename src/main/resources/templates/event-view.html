@@ -252,7 +252,28 @@
                     </div>
                 </div>
             </div>
-
+            <div class="event-info-item">
+                <div class="event-info-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="event-info-content">
+                    <div class="event-info-label">Priority</div>
+                    <div class="event-info-value">
+                        <span th:if="${event.priority == 'none'}" class="" title="no priority">
+                None
+            </span>
+            <span th:if="${event.priority == 'low'}" class="text-success" title="Low Priority">
+                <i class="fas fa-circle"></i> Low
+            </span>
+                        <span th:if="${event.priority == 'medium'}" class="text-warning" title="Medium Priority">
+                <i class="fas fa-circle"></i> Medium
+            </span>
+                        <span th:if="${event.priority == 'high'}" class="text-danger" title="High Priority">
+                <i class="fas fa-circle"></i> High
+            </span>
+                    </div>
+                </div>
+            </div>
 
             <!-- Event Description -->
             <div class="event-description">

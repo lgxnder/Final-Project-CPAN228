@@ -22,6 +22,7 @@ public class CalendarDay {
     private boolean isCurrentMonth; // Does the CalendarDay date fall on the same month as today?
     private boolean isToday;        // Is the CalendarDay date the same as today?
     private List<Event> events;     // Events that fall on date.
+    private String priority;
 
     // Check if this CalendarDay has any events.
     public boolean hasEvents() {

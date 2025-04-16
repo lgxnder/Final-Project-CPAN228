@@ -278,7 +278,7 @@ public class EventController {
                             existingEvent.setExternalLink(externalLink);
                             existingEvent.setFocusTag(focusTag);
                             existingEvent.setColor(event.getColor()); // Set the color from the form
-
+                            existingEvent.setPriority(event.getPriority());
 
                             // Save the updated event.
                             eventRepository.save(existingEvent);
@@ -369,6 +369,7 @@ public class EventController {
             @RequestParam("endTimeInput") String endTime,
             @RequestParam(value = "externalLink", required = false) String externalLink,
             @RequestParam(value = "focusTag", required = false) String focusTag,
+            @RequestParam("priority") String priority,
             RedirectAttributes redirectAttributes
     ) {
         try {
@@ -396,6 +397,7 @@ public class EventController {
             event.setExternalLink(externalLink);
             event.setFocusTag(focusTag);
             event.setColor(event.getColor()); // Set the color from the form
+            event.setPriority(priority); // Set priority from the form
 
             // Ensure that no users are associated with this event as it is global.
             event.setUser(null);

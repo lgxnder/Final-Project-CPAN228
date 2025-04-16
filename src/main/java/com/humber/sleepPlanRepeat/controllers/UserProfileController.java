@@ -20,7 +20,7 @@ import java.util.Optional;
 public class UserProfileController {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // Inject PasswordEncoder for security
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserProfileController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -58,7 +58,7 @@ public class UserProfileController {
                         updated = true;
                     } else {
                         redirectAttributes.addFlashAttribute("error", "Username already exists.");
-                        return; // Don't save other changes
+                        return;
                     }
                 }
 

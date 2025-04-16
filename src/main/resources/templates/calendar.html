@@ -207,9 +207,13 @@
 <!-- Header -->
 <div th:replace="partials/header :: header"></div>
 
+<!-- Greeting Message -->
+<div th:if="${personalizedMessage}" class="alert alert-info">
+    <p th:text="${personalizedMessage}"></p>
+</div>
+
 <!-- Main Content -->
 <div class="container py-4">
-
     <!-- Calendar Section -->
     <div class="calendar-container mb-4">
         <!-- Calendar Header -->

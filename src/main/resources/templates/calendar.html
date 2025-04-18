@@ -269,21 +269,20 @@
                      th:onclick="@{|window.location.href='/sleepplanrepeat/day?date=${day.date}'|}">
 
                     <div class="day-number" th:text="${day.date.getDayOfMonth()}">1</div>
-                    <!-- Priority Icon -->
-                    <div class="priority-icon">
-                        <span th:if="${day.priority == null}" title="No Priority Set">⚪</span>
-                        <span th:if="${day.priority == 'low'}" title="Low Priority">🟢</span>
-                        <span th:if="${day.priority == 'medium'}" title="Medium Priority">🟡</span>
-                        <span th:if="${day.priority == 'high'}" title="High Priority">🔴</span>
-                    </div>
-
                     <!-- Events for this day -->
                     <div th:each="event : ${day.events}"
                          th:class="${event.user == null ? 'event event-default' : 'event event-success'}"
                          th:style="'background-color: ' + ${event.color}"
-                         th:text="${event.title}"
                          th:onclick="@{|event.stopPropagation(); window.location.href='/sleepplanrepeat/events/view/${event.id}'|}">
-                        Event Title
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <!-- Event Title -->
+                            <span th:text="${event.title}"></span>
+                            <!-- Priority Icon -->
+                            <span th:if="${event.priority == 'low'}" title="Low Priority">🟢</span>
+                            <span th:if="${event.priority == 'medium'}" title="Medium Priority">🟡</span>
+                            <span th:if="${event.priority == 'high'}" title="High Priority">🔴</span>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,22 +1,30 @@
 package com.humber.sleepPlanRepeat.services;
 import com.humber.sleepPlanRepeat.models.Event;
+import com.humber.sleepPlanRepeat.models.EventAttendee;
+import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
+import com.humber.sleepPlanRepeat.repositories.EventAttendeeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final EventAttendeeRepository eventAttendeeRepository;
 
     // Utilize constructor injection.
-    private EventService(EventRepository eventRepository) {
+    private EventService(EventRepository eventRepository, EventAttendeeRepository eventAttendeeRepository) {
+
         this.eventRepository = eventRepository;
+        this.eventAttendeeRepository = eventAttendeeRepository;
     }
 
     // Retrieve all Events from the repository.
@@ -72,4 +80,6 @@ public class EventService {
     public boolean isEndTimeValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return endDateTime.isAfter(startDateTime);
     }
+
+
 }

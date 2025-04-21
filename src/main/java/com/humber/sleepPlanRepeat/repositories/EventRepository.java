@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 // Extend interface to allow entities to utilize Create, Read, Update, and Delete (CRUD) operations.
@@ -57,4 +58,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e WHERE e.startTime BETWEEN :start AND :end AND e.user IS NOT NULL")
     List<Event> findEventsStartingBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+
+
 }

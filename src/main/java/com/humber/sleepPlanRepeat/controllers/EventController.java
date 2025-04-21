@@ -219,6 +219,7 @@ public class EventController {
     }
 
     // Process the edit-event submission.
+
     @PostMapping("/edit/{id}")
     public String updateEvent(
             @PathVariable Long id,
@@ -281,7 +282,8 @@ public class EventController {
                             existingEvent.setPriority(event.getPriority());
 
                             // Save the updated event.
-                            eventRepository.save(existingEvent);
+                            //  eventRepository.save(existingEvent);  // REMOVE THIS LINE
+                            eventService.saveEvent(existingEvent, user); // USE THIS LINE
 
                             redirectAttributes.addFlashAttribute("message", "Event updated successfully!");
 
@@ -290,11 +292,9 @@ public class EventController {
                         }
                     }
                 }
-
                 // If user is not authorized, send error message and redirect to calendar.
                 return "redirect:/sleepplanrepeat/calendar?error=You are not authorized to edit this event";
             } else {
-
                 // If event could not be found, direct to calendar as well.
                 return "redirect:/sleepplanrepeat/calendar?error=Event not found";
             }
@@ -303,6 +303,7 @@ public class EventController {
             return "redirect:/sleepplanrepeat/events/edit/" + id;
         }
     }
+
 
     // Delete an event by id.
     @PostMapping("/delete/{id}")

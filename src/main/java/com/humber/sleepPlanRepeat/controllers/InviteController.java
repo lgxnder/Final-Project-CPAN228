@@ -8,6 +8,7 @@ import com.humber.sleepPlanRepeat.repositories.UserRepository; // Add UserReposi
 import com.humber.sleepPlanRepeat.services.EventService;
 import com.humber.sleepPlanRepeat.services.InviteService;
 import com.humber.sleepPlanRepeat.services.NotificationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -104,9 +105,24 @@ public class InviteController {
         return inviteService.rejectInvitation(invitationId);
     }
 
+
+
+    @GetMapping("/accept")
+    public ResponseEntity<String> acceptInviteByToken(@RequestParam String token) {
+        try {
+            inviteService.acceptInvitationByToken(token);
+            return ResponseEntity.ok("Invitation accepted!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
     // List all invites for the currently logged-in user
     @GetMapping("/my")
     public List<Invitation> getMyInvites(Principal principal) {
         return inviteService.getAcceptedOrPendingInvitationsByInviteeEmail(principal.getName());
     }
+
+
 }

@@ -29,6 +29,9 @@ public class Invitation {
 
     private LocalDateTime sentAt;
 
+    @Column(unique = true)
+    private String token; // i am using this to create a unique invite link
+
     public enum InvitationStatus {
         PENDING,
         ACCEPTED,

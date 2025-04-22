@@ -12,6 +12,7 @@ package com.humber.sleepPlanRepeat.services;
 
         import java.util.List;
         import java.util.Optional;
+        import java.util.UUID;
 
 @Service
 public class InviteService {
@@ -29,10 +30,13 @@ public class InviteService {
         this.eventRepository = eventRepository;
     }
 
-    // Create a new invitation
     public Invitation createInvitation(Invitation invitation) {
+        // Generate a secure token
+        String token = UUID.randomUUID().toString();
+        invitation.setToken(token);
         return inviteRepository.save(invitation);
     }
+
 
     // Find invitations by event ID
     public List<Invitation> getInvitationsByEvent(Long eventId) {
@@ -109,5 +113,40 @@ public class InviteService {
     public List<Invitation> getInvitationsByEvent(Event event) {
         return inviteRepository.findByEvent(event);
     }
+
+
+    // This will let the recipient users of an invite email be able to accept an RSVP email invite only if they have a valid token
+    @Transactional
+    public Invitation acceptInvitationByToken(String token) {
+        Invitation invitation = inviteRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+        if (invitation.getStatus() == Invitation.InvitationStatus.ACCEPTED) {
+            throw new RuntimeException("Invitation already accepted.");
+        }
+
+        invitation.setStatus(Invitation.InvitationStatus.ACCEPTED);
+        Invitation savedInvitation = inviteRepository.save(invitation);
+
+        // Duplicate the event logic (same as acceptInvitation by ID)
+        String inviteeEmail = invitation.getInviteeEmail();
+        User invitee = userRepository.findByEmail(inviteeEmail)
+                .orElseThrow(() -> new RuntimeException("Invitee not found"));
+
+        Event original = invitation.getEvent();
+        Event sharedCopy = new Event();
+        sharedCopy.setTitle(original.getTitle());
+        sharedCopy.setStartTime(original.getStartTime());
+        sharedCopy.setEndTime(original.getEndTime());
+        sharedCopy.setDescription(original.getDescription());
+        sharedCopy.setUser(invitee);
+        sharedCopy.setOriginalEvent(original);
+        sharedCopy.setShared(true);
+
+        eventRepository.save(sharedCopy);
+
+        return savedInvitation;
+    }
+
 }
 

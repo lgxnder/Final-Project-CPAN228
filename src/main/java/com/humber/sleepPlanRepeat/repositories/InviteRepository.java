@@ -27,10 +27,13 @@ public interface InviteRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findByEventIdAndStatus(Long eventId, String status);
 
     // Find all invitations for a user that are either accepted or pending
-    @Query("SELECT i FROM Invitation i WHERE i.inviteeEmail = :inviteeEmail AND i.status IN ('PENDING', 'ACCEPTED')")
+    @Query("SELECT i FROM Invitation i WHERE i.inviteeEmail = :inviteeEmail AND i.status IN (Invitation.InvitationStatus.PENDING, Invitation.InvitationStatus.ACCEPTED)")
     List<Invitation> findAcceptedOrPendingByInviteeEmail(String inviteeEmail);
 
     // Find invitations by event
     List<Invitation> findByEvent(Event event);
+
+    Optional<Invitation> findByToken(String token);
+
 }
 

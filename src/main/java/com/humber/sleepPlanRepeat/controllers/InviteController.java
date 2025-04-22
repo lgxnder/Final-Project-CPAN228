@@ -2,6 +2,7 @@ package com.humber.sleepPlanRepeat.controllers;
 
 import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.Invitation;
+import com.humber.sleepPlanRepeat.models.Rsvpdto;
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
 import com.humber.sleepPlanRepeat.repositories.UserRepository; // Add UserRepository to look up users
@@ -68,35 +69,13 @@ public class InviteController {
     public Invitation acceptInvite(@PathVariable Long invitationId, Principal principal) {
         Invitation invitation = inviteService.acceptInvitation(invitationId);
 
-        // Ensure the logged-in user is the one being invited
-        if (!invitation.getInviteeEmail().equals(principal.getName())) {
+        if (!invitation.getInviteeEmail().equalsIgnoreCase(principal.getName())) {
             throw new RuntimeException("Unauthorized to accept this invitation");
         }
 
-        // Clone the event into the invitee's calendar if needed
-        Event originalEvent = invitation.getEvent();
-
-        // Create a shared copy of the event
-        Event sharedCopy = new Event();
-        sharedCopy.setTitle(originalEvent.getTitle());
-        sharedCopy.setDescription(originalEvent.getDescription());
-        sharedCopy.setStartTime(originalEvent.getStartTime());
-        sharedCopy.setEndTime(originalEvent.getEndTime());
-        sharedCopy.setOriginalEvent(originalEvent);
-        sharedCopy.setShared(true);
-
-        // Lookup the invitee user by email (from the principal or invitation)
-        User invitee = userRepository.findByEmail(invitation.getInviteeEmail())
-                .orElseThrow(() -> new RuntimeException("User not found for email: " + invitation.getInviteeEmail()));
-
-        // Assign the invitee to the shared event
-        sharedCopy.setUser(invitee);
-
-        // Save the shared event to the repository
-        eventService.saveEvent(sharedCopy);
-
         return invitation;
     }
+
 
 
     // Reject an invitation
@@ -108,14 +87,42 @@ public class InviteController {
 
 
     @GetMapping("/accept")
-    public ResponseEntity<String> acceptInviteByToken(@RequestParam String token) {
+    public String acceptInviteByToken(@RequestParam String token, Principal principal) {
         try {
-            inviteService.acceptInvitationByToken(token);
-            return ResponseEntity.ok("Invitation accepted!");
+            inviteService.acceptInvitationByToken(token, principal.getName());
+            return "redirect:/sleepplanrepeat/calendar?inviteAccepted=true";
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return "redirect:/sleepplanrepeat/calendar?error=" + e.getMessage();
         }
     }
+
+    // Add this method inside the InviteController
+    @PostMapping("/rsvp/{inviteCode}")
+    public String handleRsvp(@PathVariable String inviteCode, @ModelAttribute Rsvpdto rsvpdto, Principal principal) {
+        try {
+            Invitation invitation = inviteService.getInvitationByInviteCode(inviteCode);
+            if (invitation == null) {
+                throw new RuntimeException("Invitation not found");
+            }
+
+            if (!invitation.getInviteeEmail().equalsIgnoreCase(principal.getName())) {
+                throw new RuntimeException("Unauthorized to RSVP for this invitation");
+            }
+
+            if ("accepted".equalsIgnoreCase(rsvpdto.getResponse())) {
+                inviteService.acceptInvitationByToken(invitation.getToken(), principal.getName());
+            } else {
+                inviteService.rejectInvitation(invitation.getId());
+            }
+
+            return "redirect:/events/confirmation?status=" + rsvpdto.getResponse();
+        } catch (Exception e) {
+            return "redirect:/events/confirmation?error=" + e.getMessage();
+        }
+    }
+
+
+
 
 
     // List all invites for the currently logged-in user

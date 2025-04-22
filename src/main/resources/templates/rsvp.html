@@ -1,0 +1,36 @@
+<!-- rsvp.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RSVP for Event</title>
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+    <!-- Bootstrap CSS (already included in calendar.html, so you can also use this) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+    <div class="event-details card shadow-sm">
+        <div class="card-body">
+            <h1 class="card-title">RSVP for Event</h1>
+            <div th:if="${error}">
+                <div class="alert alert-danger" role="alert" th:text="${error}"></div>
+            </div>
+            <div th:if="${invitation}">
+                <h2 th:text="'Event: ' + ${event.name}"></h2>
+                <p><strong>Date & Time:</strong> <span th:text="${event.startTime}"></span></p>
+                <p><strong>Location:</strong> <span th:text="${event.location}"></span></p>
+                <p><strong>Details:</strong> <span th:text="${event.details}"></span></p>
+
+                <form action="#" th:action="@{/api/invites/rsvp/{inviteCode}(inviteCode=${invitation.token})}" method="post">
+                    <div class="rsvp-buttons mt-3">
+                        <button type="submit" name="response" value="accepted" class="btn btn-success">Accept</button>
+                        <button type="submit" name="response" value="declined" class="btn btn-danger">Decline</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

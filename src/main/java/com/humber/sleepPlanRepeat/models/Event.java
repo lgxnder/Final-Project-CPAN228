@@ -6,16 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data                   // Combines @Getter, @Setter, @ToString, and other common utilities.
-@NoArgsConstructor      // Initializes a default constructor.
-@AllArgsConstructor     // Initializes an all-args constructor.
-@Builder                // Modularizes adding fields to existing objects.
-@Entity                 // Indicates class is a JPA entity.
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 @Table(name = "events")
 public class Event {
 
-    @Id // Initialize primary key.
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -32,7 +34,7 @@ public class Event {
     private String description;
 
     @Column
-    private String externalLink; // users can add a link to maybe a online Zoom meeting, etc
+    private String externalLink;
 
     @Column
     private String focusTag;
@@ -41,19 +43,31 @@ public class Event {
     private String color;
 
     @Column(nullable = false)
-    private String priority = ""; // Priority level: Low, Medium, High
+    private String priority = "";
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    // List of users who have been invited to this event
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "original_event_id")
+    private Event originalEvent;
 
+    // List of shared copies of this event
+    @Builder.Default
+    @OneToMany(mappedBy = "originalEvent", cascade = CascadeType.ALL)
+    private List<Event> sharedCopies = new ArrayList<>();
 
+    @Column(nullable = false)
+    private boolean isShared = false; // will be sued to indicate whether the event is shared or if it is originally created by the currently logged in user.
+
+    // Existing constructor
     public Event(String title, LocalDateTime startTime, LocalDateTime endTime, String description, User user) {
-        this.title = title;             // Name of event
-        this.startTime = startTime;     // Start time of event
-        this.endTime = endTime;         // End time of event
-        this.description = description; // Description of event
+        this.title = title;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.description = description;
         this.user = user;
     }
 }

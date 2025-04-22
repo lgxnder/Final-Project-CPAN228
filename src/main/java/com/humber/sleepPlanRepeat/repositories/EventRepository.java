@@ -60,5 +60,16 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findEventsStartingBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 
+    // Find all shared copies of an event by its originalEvent ID
+    List<Event> findByOriginalEventId(Long originalEventId);
 
+    // Check if a specific user has already accepted a shared event
+    Optional<Event> findByOriginalEventIdAndUserId(Long originalEventId, Integer userId);
+
+    // Get all shared events for a user
+    List<Event> findByUserIdAndIsSharedTrue(Integer userId);
+
+    // Get all original events that have been shared at least once
+    @Query("SELECT DISTINCT e FROM Event e WHERE SIZE(e.sharedCopies) > 0")
+    List<Event> findAllEventsThatHaveBeenShared();
 }

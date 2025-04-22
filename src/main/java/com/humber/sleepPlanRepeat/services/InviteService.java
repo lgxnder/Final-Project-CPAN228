@@ -60,7 +60,11 @@ public class InviteService {
 
     // Find all accepted or pending invitations for a user
     public List<Invitation> getAcceptedOrPendingInvitationsByInviteeEmail(String inviteeEmail) {
-        return inviteRepository.findAcceptedOrPendingByInviteeEmail(inviteeEmail);
+        return inviteRepository.findAcceptedOrPendingByInviteeEmail(
+                inviteeEmail,
+                Invitation.InvitationStatus.PENDING,
+                Invitation.InvitationStatus.ACCEPTED
+        );
     }
 
     @Transactional(rollbackOn = Exception.class)

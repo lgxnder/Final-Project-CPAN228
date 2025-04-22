@@ -4,11 +4,10 @@ import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.Invitation;
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
+import com.humber.sleepPlanRepeat.repositories.UserRepository; // Add UserRepository to look up users
 import com.humber.sleepPlanRepeat.services.EventService;
 import com.humber.sleepPlanRepeat.services.InviteService;
 import com.humber.sleepPlanRepeat.services.NotificationService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,17 +18,22 @@ import java.util.Optional;
 @RequestMapping("/api/invites")
 public class InviteController {
 
-    @Autowired
-    private InviteService inviteService;
+    private final InviteService inviteService;
+    private final EventService eventService;
+    private final NotificationService notificationService;
+    private final EventRepository eventRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private EventService eventService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private EventRepository eventRepository;
+    // Constructor injection
+    public InviteController(InviteService inviteService, EventService eventService,
+                            NotificationService notificationService, EventRepository eventRepository,
+                            UserRepository userRepository) {
+        this.inviteService = inviteService;
+        this.eventService = eventService;
+        this.notificationService = notificationService;
+        this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
+    }
 
     // Send an invitation
     @PostMapping("/send")
@@ -60,11 +64,18 @@ public class InviteController {
 
     // Accept an invitation
     @PostMapping("/accept/{invitationId}")
-    public Invitation acceptInvite(@PathVariable Long invitationId) {
+    public Invitation acceptInvite(@PathVariable Long invitationId, Principal principal) {
         Invitation invitation = inviteService.acceptInvitation(invitationId);
 
-        // Clone the event into the invitee's calendar if needed (pseudo-logic)
+        // Ensure the logged-in user is the one being invited
+        if (!invitation.getInviteeEmail().equals(principal.getName())) {
+            throw new RuntimeException("Unauthorized to accept this invitation");
+        }
+
+        // Clone the event into the invitee's calendar if needed
         Event originalEvent = invitation.getEvent();
+
+        // Create a shared copy of the event
         Event sharedCopy = new Event();
         sharedCopy.setTitle(originalEvent.getTitle());
         sharedCopy.setDescription(originalEvent.getDescription());
@@ -72,13 +83,20 @@ public class InviteController {
         sharedCopy.setEndTime(originalEvent.getEndTime());
         sharedCopy.setOriginalEvent(originalEvent);
         sharedCopy.setShared(true);
-        // You would normally set the invitee user here using email -> User lookup
-        // sharedCopy.setUser(userRepository.findByEmail(invitation.getInviteeEmail()));
 
+        // Lookup the invitee user by email (from the principal or invitation)
+        User invitee = userRepository.findByEmail(invitation.getInviteeEmail())
+                .orElseThrow(() -> new RuntimeException("User not found for email: " + invitation.getInviteeEmail()));
+
+        // Assign the invitee to the shared event
+        sharedCopy.setUser(invitee);
+
+        // Save the shared event to the repository
         eventService.saveEvent(sharedCopy);
 
         return invitation;
     }
+
 
     // Reject an invitation
     @PostMapping("/reject/{invitationId}")

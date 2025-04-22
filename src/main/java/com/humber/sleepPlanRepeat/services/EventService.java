@@ -17,7 +17,7 @@ public class EventService {
     private final EventRepository eventRepository;
 
     // Utilize constructor injection.
-    private EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 
@@ -93,6 +93,48 @@ public class EventService {
     public boolean isEndTimeValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return endDateTime.isAfter(startDateTime);
     }
+
+
+
+    // updating an original event and all its shared copies
+    public Event updateEventAndSharedCopies(Long eventId, Event updatedData) {
+        Optional<Event> optionalOriginal = eventRepository.findById(eventId);
+        if (optionalOriginal.isEmpty()) {
+            throw new RuntimeException("Original event not found");
+        }
+
+        Event original = optionalOriginal.get();
+
+        // Update fields on the original event
+        original.setTitle(updatedData.getTitle());
+        original.setStartTime(updatedData.getStartTime());
+        original.setEndTime(updatedData.getEndTime());
+        original.setDescription(updatedData.getDescription());
+        original.setExternalLink(updatedData.getExternalLink());
+        original.setFocusTag(updatedData.getFocusTag());
+        original.setColor(updatedData.getColor());
+        original.setPriority(updatedData.getPriority());
+
+        // Save the updated original
+        Event savedOriginal = eventRepository.save(original);
+
+        // Propagate the same changes to all shared copies
+        for (Event sharedCopy : original.getSharedCopies()) {
+            sharedCopy.setTitle(original.getTitle());
+            sharedCopy.setStartTime(original.getStartTime());
+            sharedCopy.setEndTime(original.getEndTime());
+            sharedCopy.setDescription(original.getDescription());
+            sharedCopy.setExternalLink(original.getExternalLink());
+            sharedCopy.setFocusTag(original.getFocusTag());
+            sharedCopy.setColor(original.getColor());
+            sharedCopy.setPriority(original.getPriority());
+
+            eventRepository.save(sharedCopy);
+        }
+
+        return savedOriginal;
+    }
+
 
 
 }

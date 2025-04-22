@@ -449,5 +449,13 @@ public class EventController {
     private boolean isEndTimeValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return endDateTime.isAfter(startDateTime);
     }
+
+
+
+    // Endpoint to update the original event and its shared copies
+    @PutMapping("/{eventId}")
+    public Event updateEventAndSharedCopies(@PathVariable Long eventId, @RequestBody Event updatedData) {
+        return eventService.updateEventAndSharedCopies(eventId, updatedData);
+    }
 }
 

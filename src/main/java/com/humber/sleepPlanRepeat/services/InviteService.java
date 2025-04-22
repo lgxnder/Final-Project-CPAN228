@@ -6,6 +6,7 @@ package com.humber.sleepPlanRepeat.services;
         import com.humber.sleepPlanRepeat.repositories.EventRepository;
         import com.humber.sleepPlanRepeat.repositories.InviteRepository;
         import com.humber.sleepPlanRepeat.repositories.UserRepository;
+        import jakarta.transaction.Transactional;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.stereotype.Service;
 
@@ -58,6 +59,7 @@ public class InviteService {
         return inviteRepository.findAcceptedOrPendingByInviteeEmail(inviteeEmail);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     // Accept an invitation and update its status
     public Invitation acceptInvitation(Long invitationId) {
         Optional<Invitation> invitationOptional = inviteRepository.findById(invitationId);
@@ -66,20 +68,20 @@ public class InviteService {
             invitation.setStatus(Invitation.InvitationStatus.ACCEPTED);
             Invitation savedInvitation = inviteRepository.save(invitation);
 
-            // ✅ Get the invitee's User object
+            // Get the invitee's User object
             String inviteeEmail = invitation.getInviteeEmail();
             User invitee = userRepository.findByEmail(inviteeEmail)
                     .orElseThrow(() -> new RuntimeException("Invitee not found"));
 
-            // ✅ Duplicate the event
+            // Duplicate the event
             Event original = invitation.getEvent();
             Event sharedCopy = new Event();
             sharedCopy.setTitle(original.getTitle());
             sharedCopy.setStartTime(original.getStartTime());
             sharedCopy.setEndTime(original.getEndTime());
             sharedCopy.setDescription(original.getDescription());
-            sharedCopy.setUser(invitee); // 👈 assign invitee as owner
-            sharedCopy.setOriginalEvent(original); // 👈 link back to original
+            sharedCopy.setUser(invitee); // assign invitee as owner
+            sharedCopy.setOriginalEvent(original); // link back to original
             sharedCopy.setShared(true); // if you use a flag to denote shared copies
 
             // Save the shared copy

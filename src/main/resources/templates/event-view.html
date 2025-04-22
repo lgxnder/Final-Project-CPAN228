@@ -235,15 +235,18 @@
             </div>
 
             <div class="event-info">
-            <div th:if="${event.focusTag}" class="event-info-item">
-                <div class="event-info-icon">
-                    <i class="fas fa-tag"></i>
+                <div th:if="${event.focusTag}" class="event-info-item">
+                    <div class="event-info-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="event-info-content">
+                        <div class="event-info-label">Focus Tag</div>
+                        <div class="event-info-value">
+                            <span th:if="${event.focusTag.isEmpty()}">None</span>
+                            <span th:if="${!event.focusTag.isEmpty()}" th:text="${event.focusTag}">#Work</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="event-info-content">
-                    <div class="event-info-label">Focus Tag</div>
-                    <div class="event-info-value" th:text="${event.focusTag}">#Work</div>
-                </div>
-            </div>
             </div>
 
             <div class="event-info">

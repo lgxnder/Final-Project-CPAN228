@@ -2,6 +2,7 @@ package com.humber.sleepPlanRepeat.services;
 import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.User; // Remove unused import
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -96,6 +97,7 @@ public class EventService {
 
 
 
+    @Transactional
     // updating an original event and all its shared copies
     public Event updateEventAndSharedCopies(Long eventId, Event updatedData) {
         Optional<Event> optionalOriginal = eventRepository.findById(eventId);

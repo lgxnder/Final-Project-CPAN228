@@ -1,0 +1,22 @@
+<!-- confirmation.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RSVP Confirmation</title>
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+    <div class="confirmation-message card shadow-sm">
+        <div class="card-body">
+            <h1 class="card-title">Thank you for your RSVP!</h1>
+            <p class="lead" th:text="'You have successfully ' + ${status} + ' the event.'"></p>
+            <a href="/" class="btn btn-primary">Back to Calendar</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

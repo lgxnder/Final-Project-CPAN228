@@ -4,6 +4,7 @@ package com.humber.sleepPlanRepeat.repositories;
         import com.humber.sleepPlanRepeat.models.Event;
         import org.springframework.data.jpa.repository.JpaRepository;
         import org.springframework.data.jpa.repository.Query;
+        import org.springframework.data.repository.query.Param;
         import org.springframework.stereotype.Repository;
         import java.util.List;
         import java.util.Optional;
@@ -27,10 +28,16 @@ public interface InviteRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findByEventIdAndStatus(Long eventId, String status);
 
     // Find all invitations for a user that are either accepted or pending
-    @Query("SELECT i FROM Invitation i WHERE i.inviteeEmail = :inviteeEmail AND i.status IN ('PENDING', 'ACCEPTED')")
-    List<Invitation> findAcceptedOrPendingByInviteeEmail(String inviteeEmail);
+    @Query("SELECT i FROM Invitation i WHERE i.inviteeEmail = :inviteeEmail AND i.status IN (:pendingStatus, :acceptedStatus)")
+    List<Invitation> findAcceptedOrPendingByInviteeEmail(@Param("inviteeEmail") String inviteeEmail,
+                                                         @Param("pendingStatus") Invitation.InvitationStatus pendingStatus,
+                                                         @Param("acceptedStatus") Invitation.InvitationStatus acceptedStatus);
+
 
     // Find invitations by event
     List<Invitation> findByEvent(Event event);
+
+    Optional<Invitation> findByToken(String token);
+
 }
 

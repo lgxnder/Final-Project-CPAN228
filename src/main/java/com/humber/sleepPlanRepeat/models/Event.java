@@ -70,6 +70,10 @@ public class Event {
     @Column(nullable = false)
     private boolean isShared = false; // will be sued to indicate whether the event is shared or if it is originally created by the currently logged in user.
 
+    @Column(nullable = false)
+    private boolean syncedWithOriginal = true;
+
+
     // Existing constructor
     public Event(String title, LocalDateTime startTime, LocalDateTime endTime, String description, User user) {
         this.title = title;

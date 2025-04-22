@@ -215,41 +215,17 @@
                 </div>
             </div>
 
-            <div class="event-info">
-                <div th:if="${event.color}" class="event-info-item">
-                    <div class="event-info-icon">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <div class="event-info-content">
-                        <div class="event-info-label">Event Color</div>
-                        <div class="event-info-value">
-                            <span th:style="'background-color: ' + ${event.color} + '; display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ccc;'"></span>
-                            <span style="margin-left: 10px;"></span>
-                        </div>
-                    </div>
+
+            <div th:if="${event.focusTag}" class="event-info-item">
+                <div class="event-info-icon">
+                    <i class="fas fa-tag"></i>
+                </div>
+                <div class="event-info-content">
+                    <div class="event-info-label">Focus Tag</div>
+                    <div class="event-info-value" th:text="${event.focusTag}">#Work</div>
                 </div>
             </div>
 
-            <div class="event-info">
-            <h4>Additional Details</h4>
-            </div>
-
-            <div class="event-info">
-                <div th:if="${event.focusTag}" class="event-info-item">
-                    <div class="event-info-icon">
-                        <i class="fas fa-tag"></i>
-                    </div>
-                    <div class="event-info-content">
-                        <div class="event-info-label">Focus Tag</div>
-                        <div class="event-info-value">
-                            <span th:if="${event.focusTag.isEmpty()}">None</span>
-                            <span th:if="${!event.focusTag.isEmpty()}" th:text="${event.focusTag}">#Work</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="event-info">
             <div th:if="${event.externalLink}" class="event-info-item">
                 <div class="event-info-icon">
                     <i class="fas fa-link"></i>
@@ -257,19 +233,31 @@
                 <div class="event-info-content">
                     <div class="event-info-label">External Link</div>
                     <div class="event-info-value">
-                        <a th:href="${event.externalLink}" target="_blank" rel="noopener noreferrer"
-                           style="color: var(--primary-color); text-decoration: underline;">
-                            <i class="fas fa-external-link-alt me-1"></i> Open Link
-                        </a>
+                        <th:block th:if="${event.externalLink != null && !event.externalLink.isEmpty()}">
+                            <a th:href="${event.externalLink}" target="_blank" rel="noopener noreferrer"
+                               style="color: var(--primary-color); text-decoration: underline;">
+                                <i class="fas fa-external-link-alt me-1"></i> Open Link
+                            </a>
+                        </th:block>
+                        <th:block th:unless="${event.externalLink != null && !event.externalLink.isEmpty()}">
+                            <span>No link attached</span>
+                        </th:block>
                     </div>
                 </div>
             </div>
+            <div th:if="${event.color}" class="event-info-item">
+                <div class="event-info-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <div class="event-info-content">
+                    <div class="event-info-label">Event Color</div>
+                    <div class="event-info-value">
+                        <span th:style="'background-color: ' + ${event.color} + '; display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ccc;'"></span>
+                        <span style="margin-left: 10px;"></span>
+                    </div>
+                </div>
             </div>
-
-
-
-            <div class="event-info">
-            <div class="event-info-item">
+            <div th:if="${event.priority}" class="event-info-item">
                 <div class="event-info-icon">
                     <i class="fas fa-exclamation-circle"></i>
                 </div>
@@ -290,7 +278,6 @@
             </span>
                     </div>
                 </div>
-            </div>
             </div>
 
             <!-- Event Description -->

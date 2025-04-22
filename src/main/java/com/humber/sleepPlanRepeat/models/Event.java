@@ -48,16 +48,6 @@ public class Event {
     private User user;
 
 
-    // Collaborative event
-    @Column(name = "is_collaborative", nullable = false)
-    private boolean isCollaborative = false;
-
-    @Column(name = "invite_token", unique = true)
-    private String inviteToken;
-
-    @ManyToOne
-    @JoinColumn(name = "creator_id")
-    private User creator;
 
     public Event(String title, LocalDateTime startTime, LocalDateTime endTime, String description, User user) {
         this.title = title;             // Name of event

@@ -278,6 +278,8 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <!-- Event Title -->
                             <span th:text="${event.title}"></span>
+                                <span th:if="${event.endDate != null and event.startDate != null and event.endDate.isAfter(event.startDate)}"
+                                      th:text="${'' + #temporals.format(event.endDate, 'yyyy-MM-dd')}"></span>
                             <!-- Priority Icon -->
                             <span th:if="${event.priority == 'low'}" title="Low Priority">🟢</span>
                             <span th:if="${event.priority == 'medium'}" title="Medium Priority">🟡</span>

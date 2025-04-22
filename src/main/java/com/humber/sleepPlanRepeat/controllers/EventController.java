@@ -148,6 +148,8 @@ public class EventController {
             }
 
             // Update event with parsed and formatted times.
+            event.setStartDate(parsedStartDate);
+            event.setEndDate(parsedEndDate);
             event.setStartTime(startDateTime);
             event.setEndTime(endDateTime);
             event.setExternalLink(externalLink);
@@ -277,7 +279,8 @@ public class EventController {
                             existingEvent.setFocusTag(focusTag);
                             existingEvent.setColor(event.getColor()); // Set the color from the form
                             existingEvent.setPriority(event.getPriority());
-
+                            existingEvent.setStartDate(parsedStartDate);
+                            existingEvent.setEndDate(parsedEndDate);
                             // Save the updated event.
                             eventService.saveEvent(existingEvent);
 
@@ -366,7 +369,7 @@ public class EventController {
             @RequestParam("endTimeInput") String endTime,
             @RequestParam(value = "externalLink", required = false) String externalLink,
             @RequestParam(value = "focusTag", required = false) String focusTag,
-            @RequestParam("priority") String priority,
+            @RequestParam(value = "priority", required = false) String priority,
             RedirectAttributes redirectAttributes
     ) {
         try {

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/invites")
+@RequestMapping("/sleepplanrepeat/api/invites")
 public class InviteController {
 
     private final InviteService inviteService;

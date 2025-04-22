@@ -49,14 +49,14 @@ public class Event {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // List of users who have been invited to this event
+    // Points to the original event if this is a shared copy
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "original_event_id")
     private Event originalEvent;
 
     // List of shared copies of this event
     @Builder.Default
-    @OneToMany(mappedBy = "originalEvent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "originalEvent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Event> sharedCopies = new ArrayList<>();
 
     @Column(nullable = false)

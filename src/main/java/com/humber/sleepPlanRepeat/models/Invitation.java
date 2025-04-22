@@ -24,6 +24,7 @@ public class Invitation {
     private String inviteCode;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private InvitationStatus status;
 
     private LocalDateTime sentAt;

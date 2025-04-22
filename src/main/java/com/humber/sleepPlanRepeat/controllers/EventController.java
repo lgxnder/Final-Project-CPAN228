@@ -366,7 +366,7 @@ public class EventController {
             @RequestParam("endTimeInput") String endTime,
             @RequestParam(value = "externalLink", required = false) String externalLink,
             @RequestParam(value = "focusTag", required = false) String focusTag,
-            @RequestParam(value = "priority", required = false) String priority,
+            @RequestParam("priority") String priority,
             RedirectAttributes redirectAttributes
     ) {
         try {

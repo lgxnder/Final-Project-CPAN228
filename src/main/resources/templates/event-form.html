@@ -233,12 +233,6 @@
                         <textarea class="form-control" id="description" name="description" th:field="*{description}" rows="4"></textarea>
                         <div class="form-text">Provide details about this event.</div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="color" class="form-label">Event Color</label>
-                        <input type="color" class="form-control form-control-color" id="color" name="color" th:field="*{color}" value="#6c63ff">
-                        <div class="form-text">Choose a color to represent this event.</div>
-                    </div>
                 </div>
 
                 <div class="form-section">
@@ -258,14 +252,19 @@
                         <div class="form-text">A brief tag to describe the event's focus.</div>
                     </div>
                     <div class="mb-3">
-                        <label for="priority" class="form-label">Priority (Importance from Low to High)</label>
+                        <label for="priority" class="form-label">Priority</label>
                         <select class="form-control" id="priority" name="priority"  th:field="*{priority}">
                             <option value="none">No Priority</option>
-                            <option value="low">Low - Green</option>
-                            <option value="medium">Medium - Yellow</option>
-                            <option value="high">High - Red</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
                         </select>
                         <div class="form-text">Set the priority for this event.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="color" class="form-label">Event Color</label>
+                        <input type="color" class="form-control form-control-color" id="color" name="color" th:field="*{color}" value="#6c63ff">
+                        <div class="form-text">Choose a color to represent this event.</div>
                     </div>
                 </div>
 
@@ -303,13 +302,7 @@
                         End time must be after start time.
                     </div>
                 </div>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="collaborative" name="collaborative"
-                           th:checked="${event.collaborative}">
-                    <label class="form-check-label" for="collaborative">
-                        Make this a collaborative event (shareable via invite link)
-                    </label>
-                </div>
+
 
 
                 <div class="form-actions">

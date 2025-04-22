@@ -233,15 +233,10 @@
                 <div class="event-info-content">
                     <div class="event-info-label">External Link</div>
                     <div class="event-info-value">
-                        <th:block th:if="${event.externalLink != null && !event.externalLink.isEmpty()}">
-                            <a th:href="${event.externalLink}" target="_blank" rel="noopener noreferrer"
-                               style="color: var(--primary-color); text-decoration: underline;">
-                                <i class="fas fa-external-link-alt me-1"></i> Open Link
-                            </a>
-                        </th:block>
-                        <th:block th:unless="${event.externalLink != null && !event.externalLink.isEmpty()}">
-                            <span>No link attached</span>
-                        </th:block>
+                        <a th:href="${event.externalLink}" target="_blank" rel="noopener noreferrer"
+                           style="color: var(--primary-color); text-decoration: underline;">
+                            <i class="fas fa-external-link-alt me-1"></i> Open Link
+                        </a>
                     </div>
                 </div>
             </div>
@@ -257,7 +252,7 @@
                     </div>
                 </div>
             </div>
-            <div th:if="${event.priority}" class="event-info-item">
+            <div class="event-info-item">
                 <div class="event-info-icon">
                     <i class="fas fa-exclamation-circle"></i>
                 </div>

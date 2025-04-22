@@ -20,6 +20,23 @@ public class NotificationService {
         this.mailSender = mailSender;
     }
 
+    public void sendInvitationEmail(String recipientEmail, String inviteLink, String eventTitle) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(recipientEmail);
+        message.setFrom("examplecreated@gmail.com");
+        message.setSubject("You're Invited to: " + eventTitle);
+
+        String body = String.format(
+                "Hello,\n\nYou've been invited to an event titled \"%s\".\n" +
+                        "Click the link below to view the event and respond:\n\n%s\n\n" +
+                        "Best,\nSleepPlanRepeat Team", eventTitle, inviteLink);
+
+        message.setText(body);
+        mailSender.send(message);
+
+        System.out.println("Invite email sent to: " + recipientEmail);
+    }
+
     public void sendUpcomingEventNotification(User user, Event event) {
         if (user.isEnableEmailNotifications() && user.getEmail() != null && !user.getEmail().isEmpty()) {
             SimpleMailMessage message = new SimpleMailMessage();

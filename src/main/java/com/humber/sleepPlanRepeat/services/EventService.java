@@ -1,10 +1,7 @@
 package com.humber.sleepPlanRepeat.services;
 import com.humber.sleepPlanRepeat.models.Event;
-import com.humber.sleepPlanRepeat.models.EventAttendee;
-import com.humber.sleepPlanRepeat.models.User;
+import com.humber.sleepPlanRepeat.models.User; // Remove unused import
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
-import com.humber.sleepPlanRepeat.repositories.EventAttendeeRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,13 +15,10 @@ import java.util.Optional;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final EventAttendeeRepository eventAttendeeRepository;
 
     // Utilize constructor injection.
-    private EventService(EventRepository eventRepository, EventAttendeeRepository eventAttendeeRepository) {
-
+    private EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
-        this.eventAttendeeRepository = eventAttendeeRepository;
     }
 
     // Retrieve all Events from the repository.
@@ -33,11 +27,11 @@ public class EventService {
     }
 
     // Save an Event to the repository.
-    public boolean saveEvent(Event event) {
+    public Event saveEvent(Event event) { // Changed return type to Event
 
         // Check over essential Event fields.
         if (event == null || event.getDescription() == null || event.getTitle() == null) {
-            return false;
+            return null;
         }
 
         // Handle missing start time by setting it to the current time.
@@ -52,8 +46,7 @@ public class EventService {
         }
 
         // Validation passed. Save Event object to repository.
-        eventRepository.save(event);
-        return true;
+        return eventRepository.save(event); // returns the saved event
     }
 
     // Find events given a specific date range.
@@ -66,9 +59,29 @@ public class EventService {
         return eventRepository.findByUserId(userId);
     }
 
+    //Added saveGlobalEvent
+    public Event saveGlobalEvent(Event event) {
+        // Check over essential Event fields.
+        if (event == null || event.getDescription() == null || event.getTitle() == null) {
+            return null; // Or throw an exception, depending on your error handling policy
+        }
+
+        // Handle missing start time by setting it to the current time.
+        if (event.getStartTime() == null) {
+            event.setStartTime(LocalDateTime.now());
+        }
+
+        // Ensure end time of Event exists, and is after the start time.
+        // If the end time is missing, default to +1 hour after the start time.
+        if (event.getEndTime() == null || event.getEndTime().isBefore(event.getStartTime())) {
+            event.setEndTime(event.getStartTime().plusHours(1));
+        }
+        return eventRepository.save(event);
+
+    }
 
 
-// parsing date and time strings into LocalDateTime objects for gemini event creation
+    // parsing date and time strings into LocalDateTime objects for gemini event creation
     public LocalDateTime parseDateTime(String date, String time) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");

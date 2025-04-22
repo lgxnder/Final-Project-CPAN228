@@ -1,4 +1,5 @@
 package com.humber.sleepPlanRepeat.controllers;
+
 import com.humber.sleepPlanRepeat.models.Event;
 import com.humber.sleepPlanRepeat.models.User;
 import com.humber.sleepPlanRepeat.repositories.EventRepository;
@@ -6,7 +7,6 @@ import com.humber.sleepPlanRepeat.repositories.UserRepository;
 import com.humber.sleepPlanRepeat.services.EventService;
 import com.humber.sleepPlanRepeat.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,8 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -152,8 +150,8 @@ public class EventController {
             // Update event with parsed and formatted times.
             event.setStartTime(startDateTime);
             event.setEndTime(endDateTime);
-            event.setExternalLink(externalLink); // ADD THIS LINE
-            event.setFocusTag(focusTag);         // ADD THIS LINE
+            event.setExternalLink(externalLink);
+            event.setFocusTag(focusTag);
 
             // Check if the user is authenticated properly.
             if (authentication != null && authentication.isAuthenticated()) {
@@ -167,10 +165,10 @@ public class EventController {
             }
 
             // Save the event.
-            boolean success = eventService.saveEvent(event);
+            Event savedEvent = eventService.saveEvent(event);
 
             // Redirect in different ways according to outcome of saving the Event.
-            if (success) {
+            if (savedEvent != null) {
                 redirectAttributes.addFlashAttribute("message", "Event created successfully!");
                 return "redirect:/sleepplanrepeat/calendar";
             } else {
@@ -219,7 +217,6 @@ public class EventController {
     }
 
     // Process the edit-event submission.
-
     @PostMapping("/edit/{id}")
     public String updateEvent(
             @PathVariable Long id,
@@ -282,8 +279,7 @@ public class EventController {
                             existingEvent.setPriority(event.getPriority());
 
                             // Save the updated event.
-                            //  eventRepository.save(existingEvent);  // REMOVE THIS LINE
-                            eventService.saveEvent(existingEvent, user); // USE THIS LINE
+                            eventService.saveEvent(existingEvent);
 
                             redirectAttributes.addFlashAttribute("message", "Event updated successfully!");
 
@@ -404,9 +400,9 @@ public class EventController {
             event.setUser(null);
 
             // Save the event.
-            boolean success = eventService.saveEvent(event);
+            Event savedEvent = eventService.saveGlobalEvent(event);
 
-            if (success) {
+            if (savedEvent != null) {
                 redirectAttributes.addFlashAttribute("message", "Global event created successfully!");
                 return "redirect:/sleepplanrepeat/calendar";
             } else {
@@ -454,3 +450,4 @@ public class EventController {
         return endDateTime.isAfter(startDateTime);
     }
 }
+

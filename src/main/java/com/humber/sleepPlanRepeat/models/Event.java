@@ -47,12 +47,6 @@ public class Event {
     @Column(nullable = false)
     private String priority = "";
 
-    @Column
-    private LocalDate startDate;
-
-    @Column
-    private LocalDate endDate;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

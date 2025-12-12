@@ -1,1 +1,1 @@
-This repository contains the final project for the Web Application Development course (CPAN228) at Humber Polytechnic. Developed as part of a group project with two other team members, this application leverages Spring Boot to build a dynamic and responsive web day-planner and schedule overview.
+Developed as part of a group project with two other team members, this application leverages Spring Boot to build a dynamic and responsive web day-planner and schedule overview.
